@@ -59,6 +59,16 @@ export default function Home() {
             Documentation
           </a>
         </div>
+        
+        {/* Mobile view switcher */}
+        <div className="mt-8 text-center">
+          <a 
+            href="/mobile?force=mobile"
+            className="inline-flex items-center gap-2 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
+            📱 Switch to Mobile View
+          </a>
+        </div>
       </main>
     </div>
   );

@@ -1,13 +1,31 @@
 export default function MobilePage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-blue-50 font-sans">
-      <main className="text-center p-8">
+      <main className="text-center p-8 max-w-md">
         <h1 className="text-4xl font-bold text-blue-900 mb-4">
           Hello, Mobile
         </h1>
-        <p className="text-blue-700 text-lg">
+        <p className="text-blue-700 text-lg mb-6">
           This is the mobile version of the app.
         </p>
+        
+        {/* View switcher */}
+        <div className="bg-white p-4 rounded-lg shadow-sm border">
+          <p className="text-sm text-gray-600 mb-3">
+            Prefer the desktop version?
+          </p>
+          <a 
+            href="/?force=desktop"
+            className="inline-block bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          >
+            Switch to Desktop View
+          </a>
+        </div>
+        
+        {/* PWA install hint */}
+        <div className="mt-6 text-xs text-blue-600">
+          💡 Add this page to your home screen for the full app experience!
+        </div>
       </main>
     </div>
   );
