@@ -1,25 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { isMobileDevice } from './src/lib'
 
-// Mobile user agent patterns
-const MOBILE_USER_AGENTS = [
-  /Android/i,
-  /webOS/i,
-  /iPhone/i,
-  /iPad/i,
-  /iPod/i,
-  /BlackBerry/i,
-  /Windows Phone/i,
-  /Opera Mini/i,
-  /IEMobile/i,
-  /Mobile/i
-];
-
-function isMobileDevice(userAgent: string): boolean {
-  return MOBILE_USER_AGENTS.some(pattern => pattern.test(userAgent));
-}
-
-export function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const userAgent = request.headers.get('user-agent') || '';
   

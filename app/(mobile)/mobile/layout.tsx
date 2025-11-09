@@ -14,7 +14,7 @@ export default function MobileLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="manifest" href="/mobile/manifest.json" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1e3a8a" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="mobile-web-app-capable" content="yes" />

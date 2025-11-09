@@ -1,3 +1,5 @@
+import { PWAInstallPrompt } from '../_components';
+
 export default function MobilePage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-blue-50 font-sans">
@@ -8,6 +10,11 @@ export default function MobilePage() {
         <p className="text-blue-700 text-lg mb-6">
           This is the mobile version of the app.
         </p>
+        
+        {/* PWA Install Prompt */}
+        <div className="mb-6">
+          <PWAInstallPrompt />
+        </div>
         
         {/* View switcher */}
         <div className="bg-white p-4 rounded-lg shadow-sm border">
@@ -20,11 +27,6 @@ export default function MobilePage() {
           >
             Switch to Desktop View
           </a>
-        </div>
-        
-        {/* PWA install hint */}
-        <div className="mt-6 text-xs text-blue-600">
-          💡 Add this page to your home screen for the full app experience!
         </div>
       </main>
     </div>
