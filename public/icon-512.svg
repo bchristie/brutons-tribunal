@@ -1,0 +1,5 @@
+<!-- Simple SVG icon that can be converted to PNG -->
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" fill="#1e3a8a"/>
+  <text x="256" y="280" font-family="Arial, sans-serif" font-size="160" font-weight="bold" text-anchor="middle" fill="white">BT</text>
+</svg>
