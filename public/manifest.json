@@ -1,6 +1,6 @@
 {
   "name": "Brutons Tribunal Mobile",
-  "short_name": "BT Mobile",
+  "short_name": "Brutons Tribunal",
   "description": "Mobile Progressive Web App for Brutons Tribunal",
   "start_url": "/mobile",
   "display": "standalone",
