@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { isAppInstalled } from '@/src/lib';
+import { usePWA } from '@/src/providers';
 import { 
   BeforeInstallPromptEvent, 
   PWAInstallPromptProps, 
@@ -13,12 +13,13 @@ export default function PWAInstallPrompt({
   onInstall, 
   onInstallDecline 
 }: PWAInstallPromptProps) {
+  const { isAppInstalled } = usePWA();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installState, setInstallState] = useState<InstallState>('not-installable');
 
   useEffect(() => {
-    // Check if already installed
-    if (isAppInstalled()) {
+    // Check if already installed using context
+    if (isAppInstalled) {
       setInstallState('installed');
       return;
     }
@@ -44,7 +45,7 @@ export default function PWAInstallPrompt({
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, [onInstall]);
+  }, [onInstall, isAppInstalled]); // Add isAppInstalled dependency
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;

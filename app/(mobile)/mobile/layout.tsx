@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GlobalProviders } from '@/src/providers';
 import "../../globals.css";
 
 export const metadata: Metadata = {
@@ -24,7 +25,9 @@ export default function MobileLayout({
         <link rel="apple-touch-icon" href="/icon-192.svg" />
       </head>
       <body className="antialiased">
-        {children}
+        <GlobalProviders>
+          {children}
+        </GlobalProviders>
         <script
           dangerouslySetInnerHTML={{
             __html: `
