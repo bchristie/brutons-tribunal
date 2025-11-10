@@ -1,5 +1,55 @@
-<!-- Simple SVG icon that can be converted to PNG -->
-<svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
+<!-- Courthouse PWA Icon - 192x192 -->
+<svg width="192" height="192" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Background -->
   <rect width="192" height="192" fill="#1e3a8a"/>
-  <text x="96" y="110" font-family="Arial, sans-serif" font-size="60" font-weight="bold" text-anchor="middle" fill="white">BT</text>
+  
+  <!-- Courthouse base/steps -->
+  <rect x="20" y="140" width="152" height="32" fill="#f8fafc" rx="2"/>
+  <rect x="30" y="130" width="132" height="12" fill="#e2e8f0" rx="1"/>
+  <rect x="35" y="120" width="122" height="12" fill="#cbd5e1" rx="1"/>
+  
+  <!-- Main building -->
+  <rect x="40" y="60" width="112" height="60" fill="#f8fafc"/>
+  
+  <!-- Columns (5 columns) -->
+  <rect x="48" y="65" width="8" height="50" fill="#e2e8f0"/>
+  <rect x="68" y="65" width="8" height="50" fill="#e2e8f0"/>
+  <rect x="88" y="65" width="8" height="50" fill="#e2e8f0"/>
+  <rect x="108" y="65" width="8" height="50" fill="#e2e8f0"/>
+  <rect x="128" y="65" width="8" height="50" fill="#e2e8f0"/>
+  
+  <!-- Column capitals -->
+  <rect x="46" y="62" width="12" height="4" fill="#cbd5e1"/>
+  <rect x="66" y="62" width="12" height="4" fill="#cbd5e1"/>
+  <rect x="86" y="62" width="12" height="4" fill="#cbd5e1"/>
+  <rect x="106" y="62" width="12" height="4" fill="#cbd5e1"/>
+  <rect x="126" y="62" width="12" height="4" fill="#cbd5e1"/>
+  
+  <!-- Pediment (triangular top) -->
+  <polygon points="96,35 40,60 152,60" fill="#f8fafc"/>
+  <polygon points="96,38 45,58 147,58" fill="#e2e8f0"/>
+  
+  <!-- Central entrance -->
+  <rect x="82" y="80" width="28" height="35" fill="#334155" rx="2"/>
+  <rect x="84" y="82" width="24" height="31" fill="#1e293b" rx="1"/>
+  
+  <!-- Door details -->
+  <rect x="94" y="85" width="2" height="25" fill="#475569"/>
+  <circle cx="88" cy="97" r="1.5" fill="#64748b"/>
+  <circle cx="102" cy="97" r="1.5" fill="#64748b"/>
+  
+  <!-- Justice scales symbol in pediment -->
+  <g transform="translate(96,47) scale(0.8)">
+    <!-- Scale base -->
+    <line x1="0" y1="-8" x2="0" y2="4" stroke="#64748b" stroke-width="1"/>
+    <!-- Scale beam -->
+    <line x1="-8" y1="-4" x2="8" y2="-4" stroke="#64748b" stroke-width="1"/>
+    <!-- Left pan -->
+    <circle cx="-6" cy="-4" r="3" fill="none" stroke="#64748b" stroke-width="0.8"/>
+    <!-- Right pan -->
+    <circle cx="6" cy="-4" r="3" fill="none" stroke="#64748b" stroke-width="0.8"/>
+  </g>
+  
+  <!-- Text at bottom -->
+  <text x="96" y="186" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="white">TRIBUNAL</text>
 </svg>
