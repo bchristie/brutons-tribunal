@@ -1,13 +1,13 @@
 {
-  "name": "Brutons Tribunal Mobile",
+  "name": "Brutons Tribunal",
   "short_name": "Brutons Tribunal",
-  "description": "Mobile Progressive Web App for Brutons Tribunal",
-  "start_url": "/mobile",
+  "description": "Progressive Web App for Brutons Tribunal",
+  "start_url": "/pwa",
   "display": "standalone",
   "background_color": "#dbeafe",
   "theme_color": "#1e3a8a",
   "orientation": "portrait",
-  "scope": "/mobile",
+  "scope": "/pwa",
   "icons": [
     {
       "src": "/icon-192.svg",

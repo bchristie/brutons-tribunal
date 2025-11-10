@@ -3,11 +3,11 @@ import { GlobalProviders } from '@/src/providers';
 import "../../globals.css";
 
 export const metadata: Metadata = {
-  title: "Brutons Tribunal - Mobile",
-  description: "Mobile version of Brutons Tribunal",
+  title: "Brutons Tribunal - PWA",
+  description: "Progressive Web App for Brutons Tribunal",
 };
 
-export default function MobileLayout({
+export default function PWALayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -21,7 +21,7 @@ export default function MobileLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="BT Mobile" />
+        <meta name="apple-mobile-web-app-title" content="Brutons Tribunal" />
         <link rel="apple-touch-icon" href="/icon-192.svg" />
       </head>
       <body className="antialiased">
