@@ -2,8 +2,8 @@ import { HeroLayout, ContactForm } from '@/app/(web)/_components';
 
 export default function Contact() {
   const heroContent = (
-    <div className="grid lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
-      <div className="text-white">
+    <div className="grid lg:grid-cols-2 gap-12 items-center justify-items-center max-w-6xl mx-auto h-full">
+      <div className="text-white flex flex-col justify-center items-center text-center lg:text-left lg:items-start">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
           Get In Touch
         </h1>
@@ -11,22 +11,22 @@ export default function Contact() {
           Ready to discuss your legal needs? Our experienced team is here to help.
         </p>
         <div className="space-y-4 text-lg">
-          <div className="flex items-center">
+          <div className="flex items-center justify-center lg:justify-start">
             <span className="mr-3">📧</span>
             <span>contact@brutonstribunal.com</span>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center justify-center lg:justify-start">
             <span className="mr-3">📞</span>
             <span>(555) 123-4567</span>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center justify-center lg:justify-start">
             <span className="mr-3">📍</span>
             <span>123 Legal Way, Justice City</span>
           </div>
         </div>
       </div>
       
-      <div className="flex justify-center lg:justify-end">
+      <div className="flex justify-center items-center">
         <ContactForm title="Quick Contact" />
       </div>
     </div>
