@@ -36,7 +36,7 @@ export function NavigationHeader({
           fixed top-0 left-0 right-0 z-30 transition-all duration-300
           ${isOverlay 
             ? 'bg-transparent' 
-            : 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-sm'
+            : 'bg-theme-primary shadow-sm'
           }
           ${isScrolled ? 'transform translate-y-0' : ''}
         `}

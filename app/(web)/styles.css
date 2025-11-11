@@ -153,6 +153,31 @@
   --nav-text-solid: var(--text-primary);
 }
 
+/* Force theme classes to override default styles */
+[data-theme="dark"] .bg-theme-primary {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .bg-theme-secondary {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .bg-theme-tertiary {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .text-theme-primary {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-theme-secondary {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-theme-tertiary {
+  color: var(--text-tertiary) !important;
+}
+
 /* Utility classes for quick access to theme colors */
 .bg-primary { background-color: var(--bg-primary); }
 .bg-secondary { background-color: var(--bg-secondary); }
@@ -169,3 +194,51 @@
 .transition-fast { transition: all var(--transition-fast); }
 .transition-normal { transition: all var(--transition-normal); }
 .transition-slow { transition: all var(--transition-slow); }
+
+/* Theme-aware background classes */
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.bg-theme-tertiary { background-color: var(--bg-tertiary); }
+
+/* Theme-aware text classes */
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-tertiary { color: var(--text-tertiary); }
+.text-theme-inverse { color: var(--text-inverse); }
+
+/* Override aggressive focus styles for FloatingActions */
+.floating-action-button {
+  /* Ensure solid backgrounds, no blur interference */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  isolation: isolate;
+  z-index: 1000;
+}
+
+.floating-action-button:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25) !important;
+}
+
+.floating-action-button:active {
+  transform: scale(0.95) !important;
+}
+
+.floating-action-button:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.5) !important;
+  outline-offset: 2px !important;
+}
+
+/* Remove any default button styling on FABs */
+button.floating-action-button {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+button.floating-action-button:focus,
+button.floating-action-button:active,
+button.floating-action-button:hover {
+  border: 2px solid white !important;
+}

@@ -24,7 +24,7 @@ export function NavigationMenu({
             flex items-center space-x-2 transition-all duration-300
             ${isOverlay 
               ? 'text-white hover:text-gray-200' 
-              : 'text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400'
+              : 'text-theme-primary hover:text-primary-600'
             }
             font-medium text-sm lg:text-base
           `}

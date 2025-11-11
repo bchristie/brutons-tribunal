@@ -41,7 +41,7 @@ export function MobileMenuDrawer({
       {/* Drawer */}
       <div
         className={`
-          fixed top-0 left-0 h-full w-80 max-w-[80vw] bg-white dark:bg-gray-900 
+          fixed top-0 left-0 h-full w-80 max-w-[80vw] bg-theme-primary 
           z-50 md:hidden transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           flex flex-col shadow-xl
@@ -49,11 +49,11 @@ export function MobileMenuDrawer({
         aria-hidden={!isOpen}
       >
         {/* Fixed Logo Area */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-theme-primary">
           <Link 
             href="/"
             onClick={onClose}
-            className="text-xl font-bold text-gray-900 dark:text-white"
+            className="text-xl font-bold text-theme-primary"
           >
             Bruton's Tribunal
           </Link>
@@ -69,8 +69,8 @@ export function MobileMenuDrawer({
                 onClick={onClose}
                 className="
                   flex items-center space-x-3 p-3 rounded-lg
-                  text-gray-900 dark:text-gray-100
-                  hover:bg-gray-100 dark:hover:bg-gray-800
+                  text-theme-primary
+                  hover:bg-theme-secondary
                   transition-colors duration-200
                   text-base font-medium
                 "
@@ -87,7 +87,7 @@ export function MobileMenuDrawer({
         </nav>
 
         {/* Fixed Bottom Action Area */}
-        <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+        <div className="p-6 border-t border-theme-primary bg-theme-secondary">
           {/* Placeholder for user actions - we'll enhance this later */}
           <div className="space-y-3">
             <button

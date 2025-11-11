@@ -20,7 +20,7 @@ export function NavigationLogo({
       className={`
         flex items-center transition-all duration-300
         ${isSmall ? 'text-lg' : 'text-xl md:text-2xl'}
-        ${isOverlay ? 'text-white' : 'text-gray-900 dark:text-gray-100'}
+        ${isOverlay ? 'text-white' : 'text-theme-primary'}
         hover:opacity-80
       `}
     >

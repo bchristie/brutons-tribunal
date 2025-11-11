@@ -1,7 +1,7 @@
 'use client';
 
 import { NavigationProvider, ScrollProvider } from '@/app/(web)/_providers';
-import { NavigationHeader, Hero } from '@/app/(web)/_components';
+import { NavigationHeader, Hero, FloatingActions } from '@/app/(web)/_components';
 import type { HeroLayoutProps } from './Layouts.types';
 
 export function HeroLayout({ 
@@ -51,6 +51,9 @@ export function HeroLayout({
         <main className="relative z-20">
           {children}
         </main>
+
+        {/* Floating Actions */}
+        <FloatingActions />
       </ScrollProvider>
     </NavigationProvider>
   );

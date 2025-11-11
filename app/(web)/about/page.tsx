@@ -6,14 +6,14 @@ export default function About() {
       title="About Us"
       description="Learn more about our firm's history, values, and commitment to excellence."
     >
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-16 bg-theme-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-3xl font-bold text-theme-primary mb-6">
                 Our Story
               </h2>
-              <div className="prose prose-lg text-gray-600 dark:text-gray-400 space-y-4">
+              <div className="prose prose-lg text-theme-secondary space-y-4">
                 <p>
                   Founded in 1985, Bruton's Tribunal has been at the forefront of legal 
                   excellence for nearly four decades. What started as a small practice 
@@ -31,32 +31,32 @@ export default function About() {
                 </p>
               </div>
             </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="bg-theme-secondary rounded-lg p-8">
+              <h3 className="text-2xl font-bold text-theme-primary mb-4">
                 Our Values
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
-                  <span className="text-blue-600 mr-2">•</span>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span style={{ color: 'var(--color-primary-600)' }} className="mr-2">•</span>
+                  <span className="text-theme-secondary">
                     Integrity in all our professional relationships
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-blue-600 mr-2">•</span>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span style={{ color: 'var(--color-primary-600)' }} className="mr-2">•</span>
+                  <span className="text-theme-secondary">
                     Excellence in legal knowledge and representation
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-blue-600 mr-2">•</span>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span style={{ color: 'var(--color-primary-600)' }} className="mr-2">•</span>
+                  <span className="text-theme-secondary">
                     Commitment to client success and satisfaction
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-blue-600 mr-2">•</span>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span style={{ color: 'var(--color-primary-600)' }} className="mr-2">•</span>
+                  <span className="text-theme-secondary">
                     Innovation in legal solutions and technology
                   </span>
                 </li>
@@ -66,18 +66,20 @@ export default function About() {
         </div>
       </section>
 
-      <section className="py-16 bg-gray-50 dark:bg-gray-800">
+      <section className="py-16 bg-theme-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+          <h2 className="text-3xl font-bold text-theme-primary mb-8">
             Ready to Work Together?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-theme-secondary mb-8 max-w-3xl mx-auto">
             Contact us today to discuss how we can help you achieve your legal objectives.
           </p>
-          <button className="
-            bg-blue-600 hover:bg-blue-700 text-white font-semibold
-            px-8 py-4 rounded-lg text-lg transition-colors duration-200
-          ">
+          <button 
+            className="font-semibold px-8 py-4 rounded-lg text-lg transition-colors duration-200 text-white"
+            style={{ backgroundColor: 'var(--color-primary-600)' }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-700)'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-600)'}
+          >
             Contact Us
           </button>
         </div>
