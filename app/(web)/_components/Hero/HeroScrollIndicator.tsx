@@ -81,8 +81,8 @@ export function HeroScrollIndicator({
         absolute bottom-8 ${getPositionClass(position)}
         text-white hover:text-gray-300 transition-colors duration-200
         animate-bounce cursor-pointer z-20
-        focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent
-        rounded-full p-2
+        focus:outline-none rounded-full p-2
+        hover:bg-white/10 active:bg-white/20
         ${className}
       `}
       aria-label="Scroll to content"

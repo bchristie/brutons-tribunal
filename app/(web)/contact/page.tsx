@@ -1,4 +1,4 @@
-import { Hero, NavigationHeader } from '@/app/(web)/_components';
+import { Hero, NavigationHeader, ContactForm } from '@/app/(web)/_components';
 import { NavigationProvider, ScrollProvider } from '@/app/(web)/_providers';
 
 export default function Contact() {
@@ -8,13 +8,13 @@ export default function Contact() {
         <NavigationHeader logoScale="normal" variant="auto" />
         
         {/* Two-Column Hero Example */}
-        <Hero height="75vh">
+        <Hero height="screen">
           <Hero.Background 
             src="/img/contact-hero.jpg" 
             overlay={0.6}
             position="center"
           />
-          <Hero.Content layout="two-column" gap="large" alignment="center">
+          <Hero.Content layout="two-column" gap="large" alignment="center" className="pt-20 pb-8">
             <Hero.Column alignment="left">
               <div className="text-white">
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -41,32 +41,7 @@ export default function Contact() {
             </Hero.Column>
             
             <Hero.Column alignment="center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 border border-white/20">
-                <h2 className="text-2xl font-bold text-white mb-6">Quick Contact</h2>
-                <form className="space-y-4">
-                  <input
-                    type="text"
-                    placeholder="Your Name"
-                    className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/70"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Your Email"
-                    className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/70"
-                  />
-                  <textarea
-                    placeholder="How can we help?"
-                    rows={4}
-                    className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/70"
-                  />
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
-                  >
-                    Send Message
-                  </button>
-                </form>
-              </div>
+              <ContactForm title="Quick Contact" />
             </Hero.Column>
           </Hero.Content>
           

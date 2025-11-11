@@ -42,7 +42,7 @@ export function Hero({
     <HeroContext.Provider value={contextValue}>
       <section 
         className={`
-          relative ${getHeightClass(height)} flex items-center justify-center
+          relative ${getHeightClass(height)} 
           bg-gray-900 overflow-hidden
           ${className}
         `}

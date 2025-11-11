@@ -73,7 +73,10 @@ export function HeroContent({
   };
 
   return (
-    <div className={`relative z-10 w-full px-4 sm:px-6 lg:px-8 ${getMaxWidthClass(maxWidth)} mx-auto`}>
+    <div className={`
+      relative z-10 w-full h-full flex items-center justify-center
+      px-4 sm:px-6 lg:px-8 ${getMaxWidthClass(maxWidth)} mx-auto
+    `}>
       <div className={`
         ${getLayoutClass(layout)}
         ${getAlignmentClass(alignment, layout)}
