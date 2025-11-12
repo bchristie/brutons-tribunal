@@ -11,17 +11,17 @@ export default function Contact() {
           Ready to discuss your legal needs? Our experienced team is here to help.
         </p>
         <div className="space-y-4 text-lg">
-          <div className="flex items-center justify-center lg:justify-start">
+          {/* <div className="flex items-center justify-center lg:justify-start">
             <span className="mr-3">📧</span>
             <span>contact@brutonstribunal.com</span>
-          </div>
+          </div> */}
           <div className="flex items-center justify-center lg:justify-start">
             <span className="mr-3">📞</span>
-            <span>(555) 123-4567</span>
+            <span>(813) 704-4671</span>
           </div>
           <div className="flex items-center justify-center lg:justify-start">
             <span className="mr-3">📍</span>
-            <span>123 Legal Way, Justice City</span>
+            <span>204 N Collins St, Plant City, FL 33563</span>
           </div>
         </div>
       </div>
@@ -48,15 +48,15 @@ export default function Contact() {
             <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
               <div>
                 <h3 className="font-semibold text-theme-primary mb-2">
-                  Monday - Friday
+                  Monday - Thursday
                 </h3>
-                <p className="text-theme-secondary">8:00 AM - 6:00 PM</p>
+                <p className="text-theme-secondary">12:00 PM - 10:00 PM</p>
               </div>
               <div>
                 <h3 className="font-semibold text-theme-primary mb-2">
-                  Saturday
+                  Friday - Saturday
                 </h3>
-                <p className="text-theme-secondary">9:00 AM - 3:00 PM</p>
+                <p className="text-theme-secondary">12:00 PM - 12:00 AM</p>
               </div>
             </div>
           </div>
