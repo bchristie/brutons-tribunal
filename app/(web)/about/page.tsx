@@ -1,4 +1,5 @@
 import { StandardLayout } from '@/app/(web)/_components';
+import { CTA } from '@/app/(web)/_components/CTA';
 
 export default function About() {
   return (
@@ -66,24 +67,15 @@ export default function About() {
         </div>
       </section>
 
-      <section className="py-16 bg-theme-secondary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-theme-primary mb-8">
-            Ready to Work Together?
-          </h2>
-          <p className="text-xl text-theme-secondary mb-8 max-w-3xl mx-auto">
-            Contact us today to discuss how we can help you achieve your legal objectives.
-          </p>
-          <button 
-            className="font-semibold px-8 py-4 rounded-lg text-lg transition-colors duration-200 text-white"
-            style={{ backgroundColor: 'var(--color-primary-600)' }}
-            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-700)'}
-            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-600)'}
-          >
-            Contact Us
-          </button>
-        </div>
-      </section>
+      <CTA variant="secondary">
+        <CTA.Title>Ready to Work Together?</CTA.Title>
+        <CTA.Body>
+          Contact us today to discuss how we can help you achieve your legal objectives.
+        </CTA.Body>
+        <CTA.Actions>
+          <CTA.Button href="/contact">Contact Us</CTA.Button>
+        </CTA.Actions>
+      </CTA>
     </StandardLayout>
   );
 }

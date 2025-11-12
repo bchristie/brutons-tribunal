@@ -1,4 +1,5 @@
 import { HeroLayout } from '@/app/(web)/_components';
+import { CTA } from '@/app/(web)/_components/CTA';
 
 import heroImage from '@/public/img/bar-02.jpg'
 
@@ -49,26 +50,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16" style={{ backgroundColor: 'var(--color-primary-600)', color: 'white' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Get Started?
-          </h2>
-          <p className="text-xl mb-8" style={{ color: 'var(--color-primary-100)' }}>
-            Contact us today for a consultation and discover how we can help you.
-          </p>
-          <button className="
-            bg-white font-semibold
-            px-8 py-4 rounded-lg text-lg transition-colors duration-200
-            hover:bg-theme-secondary
-          " 
-          style={{ color: 'var(--color-primary-600)' }}
-          >
-            Schedule Consultation
-          </button>
-        </div>
-      </section>
+      <CTA variant="primary">
+        <CTA.Title>Ready to Get Started?</CTA.Title>
+        <CTA.Body>
+          Contact us today for a consultation and discover how we can help you.
+        </CTA.Body>
+        <CTA.Actions layout="horizontal" gap="md">
+          <CTA.Button href="/contact">Schedule Consultation</CTA.Button>
+          <CTA.Button variant="outline" href="/about">Learn More</CTA.Button>
+        </CTA.Actions>
+      </CTA>
 
       {/* Theme Test Section */}
       <section className="py-8 bg-theme-secondary">

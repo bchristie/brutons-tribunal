@@ -55,7 +55,7 @@ export function ContactForm({
   return (
     <div className={`
       bg-white/10 backdrop-blur-sm rounded-lg p-8 border border-white/20 
-      w-full max-w-md mx-auto min-w-[320px]
+      w-full max-w-md mx-auto min-w-[420px]
       ${className}
     `}>
       <h2 className="text-2xl font-bold text-white mb-6">{title}</h2>
