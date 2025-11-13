@@ -10,8 +10,8 @@ export default function proxy(request: NextRequest) {
   const hasDesktopOverride = request.cookies.get('force-desktop')?.value === 'true';
   const hasMobileOverride = request.cookies.get('force-mobile')?.value === 'true';
   
-  // Don't redirect if already on mobile path or API routes
-  if (pathname.startsWith('/mobile') || pathname.startsWith('/api') || pathname.startsWith('/_next')) {
+  // Don't redirect if already on PWA path or API routes
+  if (pathname.startsWith('/pwa') || pathname.startsWith('/api') || pathname.startsWith('/_next')) {
     return NextResponse.next();
   }
   
@@ -26,7 +26,7 @@ export default function proxy(request: NextRequest) {
   }
   
   if (search.includes('force=mobile')) {
-    const response = NextResponse.redirect(new URL('/mobile', request.url));
+    const response = NextResponse.redirect(new URL('/pwa', request.url));
     response.cookies.set('force-mobile', 'true', { 
       maxAge: 60 * 60 * 24 * 30, // 30 days
       httpOnly: true 
@@ -34,9 +34,9 @@ export default function proxy(request: NextRequest) {
     return response;
   }
   
-  // If mobile override is set, redirect to mobile
-  if (hasMobileOverride && !pathname.startsWith('/mobile')) {
-    return NextResponse.redirect(new URL('/mobile', request.url));
+  // If mobile override is set, redirect to PWA
+  if (hasMobileOverride && !pathname.startsWith('/pwa')) {
+    return NextResponse.redirect(new URL('/pwa', request.url));
   }
   
   // If desktop override is set, stay on desktop
@@ -45,8 +45,9 @@ export default function proxy(request: NextRequest) {
   }
   
   // Auto-detect mobile and redirect (only from root path to avoid redirect loops)
+  // Disabled: Let users choose their preferred experience
   if (pathname === '/' && isMobileDevice(userAgent)) {
-    const mobileUrl = new URL('/mobile', request.url);
+    const mobileUrl = new URL('/pwa', request.url);
     
     // Add a query parameter to indicate this was an auto-redirect
     mobileUrl.searchParams.set('auto-redirect', 'true');

@@ -42,12 +42,14 @@ export function NavigationHeader({
         `}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center h-16 lg:h-20">
             {/* Logo */}
-            <NavigationLogo 
-              scale={logoScale} 
-              variant={logoVariant}
-            />
+            <div className="flex-shrink-0">
+              <NavigationLogo 
+                scale={logoScale} 
+                variant={logoVariant}
+              />
+            </div>
 
             {/* Center: Desktop Navigation */}
             <div className="flex-1 flex justify-center">
@@ -58,7 +60,7 @@ export function NavigationHeader({
             </div>
 
             {/* Right: User Dropdown & Mobile Menu */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 flex-shrink-0">
               {showUserDropdown && (
                 <UserDropdown variant={currentVariant} />
               )}

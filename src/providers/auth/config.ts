@@ -1,0 +1,91 @@
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { prisma, userRepository } from '../../lib/prisma';
+
+export const authOptions: NextAuthOptions = {
+  // Don't use adapter due to version conflicts, handle user creation in callbacks instead
+  // adapter: PrismaAdapter(prisma),
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days for web
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      // Persist user data to the token
+      if (user) {
+        token.id = user.id; // This will be the database ID from signIn callback
+        token.role = (user as any).role || 0;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Send user data to the client
+      if (token && session.user) {
+        (session.user as any).id = token.id as string;
+        (session.user as any).role = token.role as number;
+      }
+      return session;
+    },
+    async signIn({ user, account, profile }) {
+      // Custom sign-in logic - create or update user in database
+      console.log('SignIn callback:', { user: user?.email, account: account?.provider });
+      
+      if (account?.provider === 'google' && user?.email) {
+        try {
+          // Check if user already exists
+          let existingUser = await userRepository.findByEmail(user.email);
+          
+          if (!existingUser) {
+            // Create new user
+            existingUser = await userRepository.create({
+              email: user.email,
+              name: user.name || null,
+              image: user.image || null,
+              role: 0, // Default role
+            });
+            console.log('Created new user:', existingUser.email);
+          } else {
+            // Update existing user with latest info from Google
+            existingUser = await userRepository.update(existingUser.id, {
+              name: user.name || existingUser.name,
+              image: user.image || existingUser.image,
+            });
+            console.log('Updated existing user:', existingUser.email);
+          }
+          
+          // Add the database user ID to the user object for JWT
+          user.id = existingUser.id;
+        } catch (error) {
+          console.error('Error creating/updating user:', error);
+          // Still allow sign-in even if database operation fails
+        }
+      }
+      
+      return true;
+    },
+  },
+  pages: {
+    // Use NextAuth's default sign-in page instead of custom /login
+    // signIn: '/login',
+    // Remove custom error page to use NextAuth's default error handling with better error info
+    // error: '/auth/error',
+  },
+  events: {
+    async signIn({ user, account, profile, isNewUser }) {
+      // Log successful sign-ins, send welcome emails, etc.
+      console.log(`User ${user.email} signed in`);
+    },
+  },
+};
+
+// For NextAuth v4, we don't export auth function directly from config
+// Instead, we'll create it in the server utilities
+export default NextAuth(authOptions);

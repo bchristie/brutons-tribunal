@@ -4,12 +4,14 @@ import React from 'react';
 import { 
   FloatingActionContainer, 
   BreakpointIndicator, 
+  AuthIndicator,
   ThemeToggle, 
   ScrollToTop 
 } from '../FloatingActions';
 
 interface FloatingActionsProps {
   showBreakpointIndicator?: boolean;
+  showAuthIndicator?: boolean;
   showThemeToggle?: boolean;
   showScrollToTop?: boolean;
   scrollThreshold?: number | string;
@@ -17,6 +19,7 @@ interface FloatingActionsProps {
 
 export function FloatingActions({
   showBreakpointIndicator = process.env.NODE_ENV === 'development',
+  showAuthIndicator = process.env.NODE_ENV === 'development',
   showThemeToggle = true,
   showScrollToTop = true,
   scrollThreshold = 400
@@ -32,6 +35,10 @@ export function FloatingActions({
       
       {showThemeToggle && (
         <ThemeToggle />
+      )}
+      
+      {showAuthIndicator && (
+        <AuthIndicator />
       )}
       
       {showBreakpointIndicator && (

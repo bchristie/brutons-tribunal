@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { GlobalProviders } from '@/src/providers';
+import { GlobalProviders, AuthProvider } from '@/src/providers';
+import { getCurrentUser } from '@/src/providers/auth/server';
 import "../globals.css";
 import "./styles.css";
+
+// Force dynamic rendering since we have user-based layouts and widgets
+export const dynamic = 'force-dynamic';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,18 +23,23 @@ export const metadata: Metadata = {
   description: "Professional legal services with integrity and excellence",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch user on server-side to avoid client-side auth state bouncing
+  const user = await getCurrentUser();
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <GlobalProviders>
-          {children}
+          <AuthProvider initialUser={user}>
+            {children}
+          </AuthProvider>
         </GlobalProviders>
       </body>
     </html>

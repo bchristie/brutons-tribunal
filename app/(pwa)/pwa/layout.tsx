@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
-import { GlobalProviders } from '@/src/providers';
+import { GlobalProviders, AuthProvider } from '@/src/providers';
+import { getCurrentUser } from '@/src/providers/auth/server';
 import "../../globals.css";
+
+// Force dynamic rendering since we have user-based layouts and widgets
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Brutons Tribunal - PWA",
   description: "Progressive Web App for Brutons Tribunal",
 };
 
-export default function PWALayout({
+export default async function PWALayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch user on server-side to avoid client-side auth state bouncing
+  const user = await getCurrentUser();
+
   return (
     <html lang="en">
       <head>
@@ -26,7 +33,9 @@ export default function PWALayout({
       </head>
       <body className="antialiased">
         <GlobalProviders>
-          {children}
+          <AuthProvider initialUser={user}>
+            {children}
+          </AuthProvider>
         </GlobalProviders>
         <script
           dangerouslySetInnerHTML={{

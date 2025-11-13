@@ -24,6 +24,11 @@ export interface BreakpointIndicatorProps {
   show?: boolean;
 }
 
+// Auth indicator
+export interface AuthIndicatorProps {
+  show?: boolean;
+}
+
 // Theme toggle
 export type ThemeMode = 'auto' | 'light' | 'dark';
 

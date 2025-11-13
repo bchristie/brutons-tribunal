@@ -6,3 +6,4 @@ export * from './FloatingActions';
 export * from './CTA';
 export * from './Services';
 export * from './Footer';
+export * from './AuthStatus';

@@ -3,17 +3,14 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useScroll } from '@/app/(web)/_providers';
-import type { UserDropdownProps, UserDropdownState, UserMenuItemProps } from './UserDropdown.types';
+import { useAuth } from '@/src/providers/AuthProvider';
+import type { UserDropdownProps, UserMenuItemProps } from './UserDropdown.types';
 
-// Mock user data - in a real app this would come from auth context
-const mockUser: UserDropdownState = {
-  isAuthenticated: true,
-  user: {
-    name: 'John Doe',
-    email: 'john@example.com',
-    initials: 'JD'
-  }
-};
+// Helper function to get user initials
+function getUserInitials(name: string | null): string {
+  if (!name) return 'U';
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
 
 function UserMenuItem({ icon, label, href, onClick, variant = 'default' }: UserMenuItemProps) {
   const baseClasses = `
@@ -54,9 +51,13 @@ export function UserDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { headerVariant } = useScroll();
+  const { user, isAuthenticated, isLoading, signIn, signOut } = useAuth();
   
   const currentVariant = variant === 'auto' ? headerVariant : variant;
   const isOverlay = currentVariant === 'overlay';
+
+  // Get user initials for display
+  const userInitials = user ? getUserInitials(user.name) : 'U';
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -92,14 +93,26 @@ export function UserDropdown({
     };
   }, [isOpen]);
 
-  if (!mockUser.isAuthenticated) {
+  if (isLoading) {
+    // Show loading state
+    return (
+      <div className="hidden md:block">
+        <div className={`
+          w-8 h-8 rounded-full animate-pulse
+          ${isOverlay ? 'bg-white/20' : 'bg-gray-200 dark:bg-gray-700'}
+        `} />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
     // Show login button when not authenticated
     return (
-      <div className="hidden md:flex items-center space-x-4">
-        <Link
-          href="/login"
+      <div className="hidden md:block">
+        <button
+          onClick={() => signIn()}
           className={`
-            text-sm font-medium transition-colors duration-200
+            text-sm font-medium transition-colors duration-200 cursor-pointer
             ${isOverlay 
               ? 'text-white hover:text-gray-200' 
               : 'text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'
@@ -107,16 +120,7 @@ export function UserDropdown({
           `}
         >
           Sign In
-        </Link>
-        <Link
-          href="/signup"
-          className="
-            bg-blue-600 hover:bg-blue-700 text-white font-medium
-            px-4 py-2 rounded-lg text-sm transition-colors duration-200
-          "
-        >
-          Get Started
-        </Link>
+        </button>
       </div>
     );
   }
@@ -150,14 +154,14 @@ export function UserDropdown({
             : 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300'
           }
         `}>
-          {mockUser.user?.avatar ? (
+          {user.image ? (
             <img 
-              src={mockUser.user.avatar} 
-              alt={mockUser.user.name}
+              src={user.image} 
+              alt={user.name || 'User avatar'}
               className="w-8 h-8 rounded-full object-cover"
             />
           ) : (
-            mockUser.user?.initials || 'U'
+            userInitials
           )}
         </div>
 
@@ -183,10 +187,10 @@ export function UserDropdown({
           {/* User Info */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {mockUser.user?.name}
+              {user.name || 'User'}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {mockUser.user?.email}
+              {user.email}
             </p>
           </div>
 
@@ -232,10 +236,9 @@ export function UserDropdown({
                 </svg>
               }
               label="Sign Out"
-              onClick={() => {
-                // Handle sign out logic
-                console.log('Sign out clicked');
+              onClick={async () => {
                 setIsOpen(false);
+                await signOut();
               }}
               variant="danger"
             />
