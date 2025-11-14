@@ -77,9 +77,14 @@ function AuthProviderInternal({ children, initialUser }: AuthProviderProps) {
   };
 
   // Custom signIn function that directly uses Google provider
-  const signIn = async () => {
+  const signIn = async (callbackUrl?: string) => {
     // Use NextAuth's signIn with Google provider specified
-    await nextAuthSignIn('google');
+    await nextAuthSignIn('google', { callbackUrl });
+  };
+
+  // Custom signOut function with optional callback URL
+  const customSignOut = async (callbackUrl?: string) => {
+    await signOut({ callbackUrl });
   };
 
   const value: AuthContextType = {
@@ -89,7 +94,7 @@ function AuthProviderInternal({ children, initialUser }: AuthProviderProps) {
     isOnline,
     mode: detectedMode,
     signIn,
-    signOut,
+    signOut: customSignOut,
     refreshUser,
   };
 

@@ -7,8 +7,8 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isOnline: boolean;
   mode: 'mobile' | 'desktop' | 'pwa';
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
+  signIn: (callbackUrl?: string) => Promise<void>;
+  signOut: (callbackUrl?: string) => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
