@@ -5,7 +5,8 @@ import type { ContactFormProps, ContactFormData } from './ContactForm.types';
 
 export function ContactForm({ 
   title = "Quick Contact",
-  className = ""
+  className = "",
+  variant = "dark"
 }: ContactFormProps) {
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
@@ -52,24 +53,59 @@ export function ContactForm({
     }));
   };
 
+  // Variant-based styling
+  const getContainerStyle = () => {
+    return variant === 'dark' 
+      ? 'bg-white/10 backdrop-blur-sm border-white/20 text-white'
+      : 'bg-theme-secondary shadow-lg border-gray-200 text-theme-primary';
+  };
+
+  const getTitleStyle = () => {
+    return variant === 'dark' ? 'text-white' : 'text-theme-primary';
+  };
+
+  const getInputStyle = () => {
+    return variant === 'dark'
+      ? `w-full p-3 rounded-lg bg-white/20 border border-white/30 
+         text-white placeholder-white/70 transition-all duration-200
+         focus:bg-white/25 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/20
+         disabled:opacity-50 disabled:cursor-not-allowed`
+      : `w-full p-3 rounded-lg bg-white border border-gray-300
+         text-gray-900 placeholder-gray-500 transition-all duration-200
+         focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200
+         disabled:opacity-50 disabled:cursor-not-allowed`;
+  };
+
+  const getSuccessStyle = () => {
+    return variant === 'dark'
+      ? 'bg-green-500/20 border-green-500/30 text-green-200'
+      : 'bg-green-50 border-green-200 text-green-800';
+  };
+
+  const getErrorStyle = () => {
+    return variant === 'dark'
+      ? 'bg-red-500/20 border-red-500/30 text-red-200'
+      : 'bg-red-50 border-red-200 text-red-800';
+  };
+
   return (
     <div className={`
-      bg-white/10 backdrop-blur-sm rounded-lg p-8 border border-white/20 
+      ${getContainerStyle()} rounded-lg p-8 border
       w-full max-w-md mx-auto min-w-[420px]
       ${className}
     `}>
-      <h2 className="text-2xl font-bold text-white mb-6">{title}</h2>
+      <h2 className={`text-2xl font-bold ${getTitleStyle()} mb-6`}>{title}</h2>
       
       {/* Success/Error Messages */}
       {submitStatus === 'success' && (
-        <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg">
-          <p className="text-green-200 text-sm">Thank you! Your message has been sent successfully.</p>
+        <div className={`mb-4 p-3 ${getSuccessStyle()} border rounded-lg`}>
+          <p className="text-sm">Thank you! Your message has been sent successfully.</p>
         </div>
       )}
       
       {submitStatus === 'error' && (
-        <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
-          <p className="text-red-200 text-sm">Sorry, there was an error sending your message. Please try again.</p>
+        <div className={`mb-4 p-3 ${getErrorStyle()} border rounded-lg`}>
+          <p className="text-sm">Sorry, there was an error sending your message. Please try again.</p>
         </div>
       )}
       
@@ -83,12 +119,7 @@ export function ContactForm({
             placeholder="Your Name"
             required
             disabled={isSubmitting}
-            className="
-              w-full p-3 rounded-lg bg-white/20 border border-white/30 
-              text-white placeholder-white/70 transition-all duration-200
-              focus:bg-white/25 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/20
-              disabled:opacity-50 disabled:cursor-not-allowed
-            "
+            className={getInputStyle()}
           />
         </div>
         
@@ -101,12 +132,7 @@ export function ContactForm({
             placeholder="Your Email"
             required
             disabled={isSubmitting}
-            className="
-              w-full p-3 rounded-lg bg-white/20 border border-white/30 
-              text-white placeholder-white/70 transition-all duration-200
-              focus:bg-white/25 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/20
-              disabled:opacity-50 disabled:cursor-not-allowed
-            "
+            className={getInputStyle()}
           />
         </div>
         
@@ -119,12 +145,7 @@ export function ContactForm({
             rows={4}
             required
             disabled={isSubmitting}
-            className="
-              w-full p-3 rounded-lg bg-white/20 border border-white/30 
-              text-white placeholder-white/70 transition-all duration-200 resize-none
-              focus:bg-white/25 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/20
-              disabled:opacity-50 disabled:cursor-not-allowed
-            "
+            className={`${getInputStyle()} resize-none`}
           />
         </div>
         

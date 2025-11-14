@@ -14,7 +14,7 @@ export default function Home() {
       </p>
       <div className="flex flex-col sm:flex-row gap-4">
         <a 
-          href="/contact"
+          href="/pwa/dashboard"
           className="
             bg-blue-600 hover:bg-blue-700 text-white font-semibold
             px-8 py-4 rounded-lg text-lg transition-colors duration-200

@@ -12,7 +12,6 @@ import type { NavigationHeaderProps, NavigationItem } from './Navigation.types';
 const defaultMenuItems: NavigationItem[] = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Services', href: '/services' },
   { label: 'Contact', href: '/contact' },
 ];
 

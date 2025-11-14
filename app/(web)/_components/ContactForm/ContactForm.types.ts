@@ -1,6 +1,7 @@
 export interface ContactFormProps {
   title?: string;
   className?: string;
+  variant?: 'dark' | 'light';
 }
 
 export interface ContactFormData {
