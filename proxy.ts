@@ -34,6 +34,20 @@ export default function proxy(request: NextRequest) {
     return response;
   }
   
+  if (search.includes('force=clear')) {
+    const response = NextResponse.redirect(new URL('/', request.url));
+    // Clear override cookies by setting them to expire immediately
+    response.cookies.set('force-desktop', '', { 
+      maxAge: 0,
+      httpOnly: true 
+    });
+    response.cookies.set('force-mobile', '', { 
+      maxAge: 0,
+      httpOnly: true 
+    });
+    return response;
+  }
+  
   // If mobile override is set, redirect to PWA
   if (hasMobileOverride && !pathname.startsWith('/pwa')) {
     return NextResponse.redirect(new URL('/pwa', request.url));

@@ -21,7 +21,20 @@ export function ComposedFooter() {
         <span className="block text-gray-400">Estate Planning</span>
       </Footer.Section>
       
-            <Footer.Section title="Stay Connected" width={6}>
+      {/* View Override Links - Mobile Only */}
+      <Footer.Section title="View Options" width={3} className="md:hidden">
+        <a href="/?force=desktop" className="block text-gray-400 hover:text-white transition-colors text-sm">
+          🖥️ Force Desktop
+        </a>
+        <a href="/?force=mobile" className="block text-gray-400 hover:text-white transition-colors text-sm">
+          📱 Force Mobile
+        </a>
+        <a href="/?force=clear" className="block text-gray-400 hover:text-white transition-colors text-sm">
+          🔄 Default View
+        </a>
+      </Footer.Section>
+      
+      <Footer.Section title="Stay Connected" width={6} className="md:col-span-6">
         <p className="text-gray-400 mb-4">
           Subscribe to our newsletter for legal insights and updates.
         </p>
