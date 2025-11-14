@@ -91,7 +91,7 @@ export function ContactForm({
   return (
     <div className={`
       ${getContainerStyle()} rounded-lg p-8 border
-      w-full max-w-md mx-auto min-w-[420px]
+      w-full max-w-md mx-auto
       ${className}
     `}>
       <h2 className={`text-2xl font-bold ${getTitleStyle()} mb-6`}>{title}</h2>
