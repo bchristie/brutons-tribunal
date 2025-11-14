@@ -16,7 +16,7 @@ export default function ProfilePage() {
       items: [
         { label: 'Name', value: user?.name || 'Not provided' },
         { label: 'Email', value: user?.email || 'Not provided' },
-        { label: 'Member since', value: 'March 2024' },
+        { label: 'Member since', value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown' },
       ]
     },
     {
@@ -81,9 +81,9 @@ export default function ProfilePage() {
 
       {/* Actions */}
       <div className="space-y-3">
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+        {/*<button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
           Edit Profile
-        </button>
+        </button>*/}
         
         <button className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-lg transition-colors">
           Privacy Settings

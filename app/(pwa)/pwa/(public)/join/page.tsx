@@ -4,6 +4,7 @@ import { useAuth } from '@/src/providers/AuthProvider';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { FaEye, FaGavel, FaLock } from 'react-icons/fa';
 
 export default function JoinPage() {
   const { signIn, isAuthenticated } = useAuth();
@@ -18,58 +19,19 @@ export default function JoinPage() {
 
   const benefits = [
     {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-        </svg>
-      ),
-      title: "Expert Content",
-      description: "Access exclusive legal articles, case studies, and analysis from industry professionals."
+      icon: <FaEye className="w-6 h-6" />,
+      title: "Plead Blind",
+      description: "Approach each sample without prejudice or prior knowledge."
     },
     {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h8z" />
-        </svg>
-      ),
-      title: "Community Discussions",
-      description: "Join meaningful conversations with legal professionals and thought leaders."
+      icon: <FaGavel className="w-6 h-6" />,
+      title: "Deliver Your Testimony",
+      description: "Apply your rating—from the Pleadable to the Guilty as Charged."
     },
     {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4c0 5-2 7-4 7s-4-2-4-7z" />
-        </svg>
-      ),
-      title: "Event Notifications",
-      description: "Get notified about webinars, networking events, and important legal updates."
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      ),
-      title: "Personal Profile",
-      description: "Create your professional profile and connect with peers in your field."
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-      ),
-      title: "Personalized Feed",
-      description: "Get content recommendations tailored to your interests and practice areas."
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-      ),
-      title: "Secure & Private",
-      description: "Your data is protected with industry-standard security and privacy measures."
+      icon: <FaLock className="w-6 h-6" />,
+      title: "Seal the Verdict",
+      description: "Once all votes are cast, the evidence will be unsealed, and the true identity and final performance of each spirit will be revealed in a binding judgment."
     }
   ];
 
@@ -92,15 +54,16 @@ export default function JoinPage() {
             Join Bruton's Tribunal
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
-            Unlock exclusive content and join a community of legal professionals
+            Where Every Pour is Under Oath!<br />
+            Join a community of legal pourfessionals.
           </p>
         </div>
 
         {/* Benefits Grid */}
-        <div className="grid gap-6 md:grid-cols-2 mb-8">
+        <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3 mb-8">
           {benefits.map((benefit, index) => (
             <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <div className="flex items-start space-x-4">
+              <div className="flex flex-col items-center text-center space-y-4">
                 <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-300">
                   {benefit.icon}
                 </div>
@@ -141,7 +104,8 @@ export default function JoinPage() {
             </button>
             
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              By signing in, you agree to our Terms of Service and Privacy Policy
+              Entering the Tribunal means you are bound by our Standing Orders
+              (Terms of Service) and respect the sanctity of your Sealed Records (Privacy Policy).
             </p>
           </div>
         </div>

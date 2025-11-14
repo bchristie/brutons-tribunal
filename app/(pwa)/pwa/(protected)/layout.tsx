@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { MdDashboard, MdForum, MdEvent, MdPerson } from 'react-icons/md';
 
 interface ProtectedLayoutProps {
   children: ReactNode;
@@ -40,39 +41,22 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
     {
       name: 'Dashboard',
       href: '/pwa/dashboard',
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z" />
-        </svg>
-      )
+      icon: <MdDashboard className="w-6 h-6" />
     },
     {
       name: 'Discussions',
       href: '/pwa/discussions',
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h8z" />
-        </svg>
-      )
+      icon: <MdForum className="w-6 h-6" />
     },
     {
       name: 'Events',
       href: '/pwa/events',
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      )
+      icon: <MdEvent className="w-6 h-6" />
     },
     {
       name: 'Profile',
       href: '/pwa/profile',
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      )
+      icon: <MdPerson className="w-6 h-6" />
     }
   ];
 
