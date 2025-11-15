@@ -3,16 +3,29 @@ import { PrismaNeon } from '@prisma/adapter-neon';
 import { neonConfig } from '@neondatabase/serverless';
 import ws from 'ws'; // Required for the adapter's WebSocket communication
 
-// 1. Setup for Vercel/Node environment
-neonConfig.webSocketConstructor = ws;
+// Check if we should use Neon adapter or regular PostgreSQL
+const useNeonAdapter = process.env.DATABASE_PROVIDER !== 'postgresql';
 const connectionString = process.env.DATABASE_URL as string;
 
-// 2. Instantiate the Adapter
-// This replaces Prisma's default TCP driver with a faster, serverless-optimized one.
-const adapter = new PrismaNeon({ connectionString }); 
+// Create Prisma Client based on provider
+const createPrismaClient = () => {
+  if (useNeonAdapter) {
+    // 1. Setup for Vercel/Neon environment
+    neonConfig.webSocketConstructor = ws;
+    
+    // 2. Instantiate the Neon Adapter
+    // This replaces Prisma's default TCP driver with a faster, serverless-optimized one.
+    const adapter = new PrismaNeon({ connectionString }); 
+    
+    // 3. Create Prisma Client with Neon adapter
+    return new PrismaClient({ adapter });
+  } else {
+    // Use standard PostgreSQL connection (no adapter needed)
+    return new PrismaClient();
+  }
+};
 
-// 3. Define the Singleton Pattern
-const prismaClient = new PrismaClient({ adapter });
+const prismaClient = createPrismaClient();
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import type { ApiMethods } from './api.types';
 
 export interface PWAState {
   isMobileDevice: boolean;
@@ -16,6 +17,7 @@ export interface PWAActions {
 export interface GlobalContextState extends PWAState, PWAActions {
   isInitialized: boolean;
   userAgent: string;
+  api: ApiMethods;
 }
 
 export interface GlobalProvidersProps {

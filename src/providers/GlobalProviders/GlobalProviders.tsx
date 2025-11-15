@@ -8,6 +8,7 @@ import {
   registerServiceWorker as registerSW
 } from '@/src/lib';
 import { GlobalContextState, GlobalProvidersProps } from './GlobalProviders.types';
+import { apiMethods } from './api.functions';
 
 // Create the context
 const GlobalContext = createContext<GlobalContextState | undefined>(undefined);
@@ -19,6 +20,12 @@ export function useGlobal() {
     throw new Error('useGlobal must be used within a GlobalProviders');
   }
   return context;
+}
+
+// Hook specifically for API functionality
+export function useApi() {
+  const context = useGlobal();
+  return context.api;
 }
 
 // Hook specifically for PWA functionality
@@ -126,6 +133,9 @@ export default function GlobalProviders({
     registerServiceWorker,
     checkInstallationStatus,
     refreshPWAState,
+    
+    // API
+    api: apiMethods,
   };
 
   return (

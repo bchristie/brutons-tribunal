@@ -4,7 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") 
+  url      = env("DATABASE_URL")
+  // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {
@@ -16,5 +17,50 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
+  updates   Update[]
+
   @@map("users")
+}
+
+model Update {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  content     String?     // Full content/body (optional)
+  type        UpdateType
+  status      UpdateStatus @default(PUBLISHED)
+  linkHref    String?     // Link destination (for CTAs)
+  linkText    String?     // Link text (for CTAs)
+  imageUrl    String?     // Optional featured image
+  
+  // Metadata
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  publishedAt DateTime?   // When it was published (can be scheduled)
+  
+  // Relations
+  authorId    String
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Indexes for performance
+  @@index([type])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([createdAt])
+  @@map("updates")
+}
+
+enum UpdateType {
+  CASE_STUDY
+  DISCUSSION
+  EVENT
+  NEWS
+  ANNOUNCEMENT
+}
+
+enum UpdateStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }
