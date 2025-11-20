@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from './config';
-import { userRepository } from '../../lib/prisma';
+import { userRepository, permissionRepository } from '../../lib/prisma';
 import type { User } from '../../lib/prisma/types';
 
 /**
@@ -55,11 +55,13 @@ export async function isAuthenticated(): Promise<boolean> {
 }
 
 /**
- * Server-side utility to check if user has specific role
+ * Server-side utility to check if user has specific role by name
  */
-export async function hasRole(requiredRole: number): Promise<boolean> {
+export async function hasRole(roleName: string): Promise<boolean> {
   const user = await getCurrentUser();
-  return user ? user.role >= requiredRole : false;
+  if (!user) return false;
+  
+  return await permissionRepository.hasRole(user.id, roleName);
 }
 
 /**
@@ -79,10 +81,11 @@ export async function requireAuth(): Promise<User> {
 /**
  * Server-side utility to require specific role
  */
-export async function requireRole(requiredRole: number): Promise<User> {
+export async function requireRole(roleName: string): Promise<User> {
   const user = await requireAuth();
   
-  if (user.role < requiredRole) {
+  const hasRequiredRole = await permissionRepository.hasRole(user.id, roleName);
+  if (!hasRequiredRole) {
     throw new Error('Insufficient permissions');
   }
   
@@ -92,7 +95,7 @@ export async function requireRole(requiredRole: number): Promise<User> {
 /**
  * Utility for API route protection (for app/(api) endpoints)
  */
-export async function protectApiRoute(requiredRole?: number): Promise<{
+export async function protectApiRoute(requiredRole?: string): Promise<{
   user: User;
   error?: never;
 } | {
@@ -125,13 +128,16 @@ export async function protectApiRoute(requiredRole?: number): Promise<{
       };
     }
 
-    if (requiredRole !== undefined && user.role < requiredRole) {
-      return {
-        error: {
-          status: 403,
-          message: 'Insufficient permissions'
-        }
-      };
+    if (requiredRole !== undefined) {
+      const hasRequiredRole = await permissionRepository.hasRole(user.id, requiredRole);
+      if (!hasRequiredRole) {
+        return {
+          error: {
+            status: 403,
+            message: 'Insufficient permissions'
+          }
+        };
+      }
     }
 
     return { user };

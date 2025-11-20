@@ -1,11 +1,13 @@
 import { PrismaClient } from "@prisma/client";
+import { seedPermissions } from "./seed-permissions";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("🌱 Starting database seeding...");
 
-  // Seed data placeholder
+  // Seed permissions and roles
+  await seedPermissions(prisma);
 
   console.log("🌱 Database seeding completed.");
 }

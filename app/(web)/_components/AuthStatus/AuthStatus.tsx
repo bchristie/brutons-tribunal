@@ -40,7 +40,7 @@ export default function AuthStatus() {
                 <div><strong>ID:</strong> {user.id}</div>
                 <div><strong>Email:</strong> {user.email}</div>
                 <div><strong>Name:</strong> {user.name || 'N/A'}</div>
-                <div><strong>Role:</strong> {user.role}</div>
+                <div><strong>Roles:</strong> {(user as any).roles?.join(', ') || 'None'}</div>
               </div>
             </div>
           )}

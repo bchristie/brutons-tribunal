@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { updateRepository } from '@/src/lib/prisma';
+import { updateRepository, permissionRepository } from '@/src/lib/prisma';
 import { UpdateType, UpdateStatus } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/src/providers/auth/config';
+import { Resources, Actions } from '@/src/lib/permissions/permissions';
 
 export async function GET(request: NextRequest) {
   try {
+    // Public endpoint - no authentication required
     const { searchParams } = new URL(request.url);
     
     // Parse query parameters
@@ -64,10 +68,83 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  // TODO: Implement create update endpoint
-  // For now, return method not allowed
-  return NextResponse.json(
-    { success: false, error: 'Method not implemented yet' },
-    { status: 501 }
-  );
+  try {
+    // Check authentication and permissions
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Unauthorized',
+          message: 'You must be signed in to create updates'
+        },
+        { status: 401 }
+      );
+    }
+    
+    const userId = (session.user as any).id;
+    
+    // Check if user has permission to create updates
+    const canCreate = await permissionRepository.can(userId, Resources.UPDATES, Actions.CREATE);
+    
+    if (!canCreate) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Forbidden',
+          message: 'You do not have permission to create updates'
+        },
+        { status: 403 }
+      );
+    }
+    
+    const body = await request.json();
+    
+    // Validate required fields
+    if (!body.title || !body.description || !body.type) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Validation error',
+          message: 'Title, description, and type are required'
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Create the update
+    const update = await updateRepository.create({
+      title: body.title,
+      description: body.description,
+      content: body.content || null,
+      type: body.type as UpdateType,
+      status: body.status || UpdateStatus.DRAFT,
+      linkHref: body.linkHref || null,
+      linkText: body.linkText || null,
+      imageUrl: body.imageUrl || null,
+      publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,
+      authorId: userId,
+    });
+    
+    return NextResponse.json({
+      success: true,
+      data: update,
+      message: 'Update created successfully'
+    }, { status: 201 });
+    
+  } catch (error) {
+    console.error('Failed to create update:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to create update',
+        message: process.env.NODE_ENV === 'development' ? errorMessage : 'Internal server error'
+      },
+      { status: 500 }
+    );
+  }
 }

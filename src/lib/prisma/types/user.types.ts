@@ -3,21 +3,18 @@ export interface UserCreateInput {
   email: string;
   name?: string | null;
   image?: string | null;
-  role?: number;
 }
 
 export interface UserUpdateInput {
   email?: string;
   name?: string | null;
   image?: string | null;
-  role?: number;
 }
 
 export interface UserQueryOptions {
   where?: {
     id?: string;
     email?: string;
-    role?: number;
     name?: {
       contains?: string;
       mode?: 'insensitive';
@@ -39,7 +36,6 @@ export interface User {
   email: string;
   name: string | null;
   image: string | null;
-  role: number;
   createdAt: Date;
   updatedAt: Date;
 }

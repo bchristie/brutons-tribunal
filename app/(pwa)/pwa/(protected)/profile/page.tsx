@@ -1,9 +1,14 @@
 'use client';
 
 import { useAuth } from '@/src/providers/AuthProvider';
+import { useSession } from 'next-auth/react';
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
+  const { data: session } = useSession();
+  
+  // Get roles from session instead of user object
+  const userRoles = (session?.user as any)?.roles || [];
 
   const getUserInitials = (name: string | null): string => {
     if (!name) return 'U';
@@ -16,6 +21,7 @@ export default function ProfilePage() {
       items: [
         { label: 'Name', value: user?.name || 'Not provided' },
         { label: 'Email', value: user?.email || 'Not provided' },
+        { label: 'Roles', value: userRoles.join(', ') || 'None assigned' },
         { label: 'Member since', value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown' },
       ]
     },

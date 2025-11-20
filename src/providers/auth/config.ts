@@ -1,7 +1,8 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import { prisma, userRepository } from '../../lib/prisma';
+import { prisma, userRepository, permissionRepository } from '../../lib/prisma';
+import { Roles } from '../../lib/permissions/permissions';
 
 export const authOptions: NextAuthOptions = {
   // Don't use adapter due to version conflicts, handle user creation in callbacks instead
@@ -23,7 +24,6 @@ export const authOptions: NextAuthOptions = {
       // Persist user data to the token
       if (user) {
         token.id = user.id; // This will be the database ID from signIn callback
-        token.role = (user as any).role || 0;
       }
       return token;
     },
@@ -31,7 +31,20 @@ export const authOptions: NextAuthOptions = {
       // Send user data to the client
       if (token && session.user) {
         (session.user as any).id = token.id as string;
-        (session.user as any).role = token.role as number;
+        
+        // Hydrate permissions into session
+        try {
+          console.log('Loading permissions for user:', token.id);
+          const userPerms = await permissionRepository.getUserPermissions(token.id as string);
+          console.log('Loaded roles:', userPerms.roles);
+          console.log('Loaded permissions count:', userPerms.permissions.size);
+          (session.user as any).permissions = Array.from(userPerms.permissions);
+          (session.user as any).roles = userPerms.roles;
+        } catch (error) {
+          console.error('Error loading user permissions:', error);
+          (session.user as any).permissions = [];
+          (session.user as any).roles = [];
+        }
       }
       return session;
     },
@@ -43,16 +56,37 @@ export const authOptions: NextAuthOptions = {
         try {
           // Check if user already exists
           let existingUser = await userRepository.findByEmail(user.email);
+          let isFirstUser = false;
           
           if (!existingUser) {
+            // Check if this is the first user in the database
+            const userCount = await userRepository.count();
+            isFirstUser = userCount === 0;
+            
             // Create new user
             existingUser = await userRepository.create({
               email: user.email,
               name: user.name || null,
               image: user.image || null,
-              role: 0, // Default role
             });
             console.log('Created new user:', existingUser.email);
+            
+            // If this is the first user, assign admin role
+            if (isFirstUser) {
+              const adminRole = await permissionRepository.getRole(Roles.ADMIN);
+              
+              if (adminRole) {
+                await prisma.userRole.create({
+                  data: {
+                    userId: existingUser.id,
+                    roleId: adminRole.id,
+                  },
+                });
+                console.log('✅ First user - assigned admin role to:', existingUser.email);
+              } else {
+                console.warn('⚠️ Admin role not found in database. Run seed to create roles.');
+              }
+            }
           } else {
             // Update existing user with latest info from Google
             existingUser = await userRepository.update(existingUser.id, {

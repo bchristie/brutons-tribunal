@@ -28,16 +28,6 @@ export class UserRepository extends BaseRepository<User, UserCreateInput, UserUp
   }
 
   /**
-   * Find users by role
-   */
-  async findByRole(role: number): Promise<User[]> {
-    return await this.getDelegate().findMany({
-      where: { role },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  /**
    * Search users by name (case-insensitive partial match)
    */
   async searchByName(searchTerm: string): Promise<User[]> {
@@ -75,40 +65,22 @@ export class UserRepository extends BaseRepository<User, UserCreateInput, UserUp
   }
 
   /**
-   * Update user role
-   */
-  async updateRole(id: string, role: number): Promise<User> {
-    return await this.update(id, { role });
-  }
-
-  /**
    * Get user statistics
    */
   async getStats(): Promise<{
     totalUsers: number;
-    usersByRole: Record<number, number>;
     recentUsers: User[];
   }> {
-    const [totalUsers, allUsers, recentUsers] = await Promise.all([
+    const [totalUsers, recentUsers] = await Promise.all([
       this.count(),
-      this.getDelegate().findMany({
-        select: { role: true },
-      }),
       this.getDelegate().findMany({
         orderBy: { createdAt: 'desc' },
         take: 5,
       }),
     ]);
 
-    // Count users by role
-    const usersByRole: Record<number, number> = {};
-    allUsers.forEach((user: { role: number }) => {
-      usersByRole[user.role] = (usersByRole[user.role] || 0) + 1;
-    });
-
     return {
       totalUsers,
-      usersByRole,
       recentUsers,
     };
   }

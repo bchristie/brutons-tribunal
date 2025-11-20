@@ -56,7 +56,6 @@ function AuthProviderInternal({ children, initialUser }: AuthProviderProps) {
         email: session.user.email || '',
         name: session.user.name || null,
         image: session.user.image || null,
-        role: (session.user as any).role || 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

@@ -19,11 +19,11 @@ export function AuthProvider({ children, ...props }: AuthProviderProps) {
 }
 
 /**
- * Hook to check if user has specific role
+ * Hook to check if user has specific role by name
  */
-export function useHasRole(requiredRole: number): boolean {
+export function useHasRole(roleName: string): boolean {
   const { user } = useAuth();
-  return user ? user.role >= requiredRole : false;
+  return user ? ((user as any).roles || []).includes(roleName) : false;
 }
 
 /**
