@@ -1,24 +1,43 @@
+import { BaseRepository } from './BaseRepository';
 import { prisma } from './prisma';
+import type {
+  UserPermissions,
+  Role,
+  Permission,
+  UserRole,
+  RolePermission,
+} from './types/permission.types';
 
-export type UserPermissions = {
-  userId: string;
-  permissions: Set<string>; // e.g., "users:read", "products:delete"
-  roles: string[];
-  cachedAt: number;
-};
-
-class PermissionRepository {
+/**
+ * Permission Repository class extending BaseRepository
+ * Manages roles, permissions, and user access control
+ * 
+ * Note: Cache is request-scoped only (serverless environment).
+ * Multiple permission checks within the same request will benefit from caching.
+ */
+export class PermissionRepository extends BaseRepository<Role, any, any> {
+  // Request-scoped cache - only persists for the duration of this instance
   private cache = new Map<string, UserPermissions>();
-  private cacheDuration = 5 * 60 * 1000; // 5 minutes
+
+  constructor() {
+    super(prisma, 'Role');
+  }
 
   /**
-   * Get all permissions for a user, with caching
+   * Get the Prisma role delegate
    */
-  async getUserPermissions(userId: string, forceRefresh = false): Promise<UserPermissions> {
-    // Check cache first
-    if (!forceRefresh) {
+  protected getDelegate() {
+    return this.prisma.role;
+  }
+
+  /**
+   * Get all permissions for a user, with request-scoped caching
+   */
+  async getUserPermissions(userId: string, useCache = true): Promise<UserPermissions> {
+    // Check cache first (only within this request)
+    if (useCache) {
       const cached = this.cache.get(userId);
-      if (cached && Date.now() - cached.cachedAt < this.cacheDuration) {
+      if (cached) {
         return cached;
       }
     }
@@ -63,10 +82,9 @@ class PermissionRepository {
       userId,
       permissions,
       roles,
-      cachedAt: Date.now(),
     };
 
-    // Cache it
+    // Cache for this request
     this.cache.set(userId, userPermissions);
 
     return userPermissions;
@@ -125,8 +143,8 @@ class PermissionRepository {
   /**
    * Assign a role to a user
    */
-  async assignRole(userId: string, roleId: string) {
-    const userRole = await prisma.userRole.upsert({
+  async assignRole(userId: string, roleId: string): Promise<UserRole> {
+    const userRole = await this.prisma.userRole.upsert({
       where: {
         userId_roleId: {
           userId,
@@ -140,7 +158,7 @@ class PermissionRepository {
       },
     });
 
-    // Invalidate cache
+    // Invalidate cache for this request
     this.invalidateCache(userId);
 
     return userRole;
@@ -149,8 +167,8 @@ class PermissionRepository {
   /**
    * Remove a role from a user
    */
-  async removeRole(userId: string, roleId: string) {
-    const userRole = await prisma.userRole.delete({
+  async removeRole(userId: string, roleId: string): Promise<UserRole> {
+    const userRole = await this.prisma.userRole.delete({
       where: {
         userId_roleId: {
           userId,
@@ -159,7 +177,7 @@ class PermissionRepository {
       },
     });
 
-    // Invalidate cache
+    // Invalidate cache for this request
     this.invalidateCache(userId);
 
     return userRole;
@@ -168,8 +186,8 @@ class PermissionRepository {
   /**
    * Get all roles for a user
    */
-  async getUserRoles(userId: string) {
-    const userRoles = await prisma.userRole.findMany({
+  async getUserRoles(userId: string): Promise<Role[]> {
+    const userRoles = await this.prisma.userRole.findMany({
       where: { userId },
       include: {
         role: true,
@@ -182,8 +200,8 @@ class PermissionRepository {
   /**
    * Assign a permission to a role
    */
-  async assignPermissionToRole(roleId: string, permissionId: string) {
-    const rolePermission = await prisma.rolePermission.upsert({
+  async assignPermissionToRole(roleId: string, permissionId: string): Promise<RolePermission> {
+    const rolePermission = await this.prisma.rolePermission.upsert({
       where: {
         roleId_permissionId: {
           roleId,
@@ -197,7 +215,7 @@ class PermissionRepository {
       },
     });
 
-    // Clear cache for all users with this role
+    // Clear cache for this request (affects all users with this role)
     this.clearCache();
 
     return rolePermission;
@@ -206,8 +224,8 @@ class PermissionRepository {
   /**
    * Remove a permission from a role
    */
-  async removePermissionFromRole(roleId: string, permissionId: string) {
-    const rolePermission = await prisma.rolePermission.delete({
+  async removePermissionFromRole(roleId: string, permissionId: string): Promise<RolePermission> {
+    const rolePermission = await this.prisma.rolePermission.delete({
       where: {
         roleId_permissionId: {
           roleId,
@@ -216,7 +234,7 @@ class PermissionRepository {
       },
     });
 
-    // Clear cache for all users with this role
+    // Clear cache for this request (affects all users with this role)
     this.clearCache();
 
     return rolePermission;
@@ -225,8 +243,8 @@ class PermissionRepository {
   /**
    * Get a role by name
    */
-  async getRole(roleName: string) {
-    return await prisma.role.findUnique({
+  async getRole(roleName: string): Promise<Role | null> {
+    return await this.prisma.role.findUnique({
       where: { name: roleName },
     });
   }
@@ -234,8 +252,8 @@ class PermissionRepository {
   /**
    * Get all roles
    */
-  async getAllRoles() {
-    return await prisma.role.findMany({
+  async getAllRoles(): Promise<Role[]> {
+    return await this.prisma.role.findMany({
       orderBy: { name: 'asc' },
     });
   }
