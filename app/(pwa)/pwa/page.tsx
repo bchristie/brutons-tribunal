@@ -28,6 +28,8 @@ export default function PWAHomePage() {
     );
   }
 
+  const bottomOffset = isAuthenticated ? 'bottom-4' : 'bottom-32';
+
   return (
     <div className="min-h-screen">
       {/* Hero Section with Background Image */}
@@ -58,7 +60,7 @@ export default function PWAHomePage() {
         {/* Scroll Indicator */}
         <button
           onClick={scrollToContent}
-          className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-10 animate-bounce cursor-pointer hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 rounded-full p-2"
+          className={`absolute ${bottomOffset} left-1/2 transform -translate-x-1/2 z-10 animate-bounce cursor-pointer hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 rounded-full p-2`}
           aria-label="Scroll to content"
         >
           <svg
