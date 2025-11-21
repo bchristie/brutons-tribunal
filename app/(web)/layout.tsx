@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GlobalProviders, AuthProvider } from '@/src/providers';
 import { getCurrentUser, getCurrentSession } from '@/src/providers/auth/server';
@@ -21,6 +21,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Bruton's Tribunal",
   description: "Professional legal services with integrity and excellence",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5, // Allow zoom for accessibility
+  userScalable: true,
 };
 
 export default async function RootLayout({

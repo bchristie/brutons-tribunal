@@ -4,7 +4,7 @@ import { getCurrentSession, getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
 import { AuthProvider } from '@/src/providers/AuthProvider/AuthProviderWrapper';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 import "../../globals.css";
 
 // Force dynamic rendering since we have user-based layouts and widgets
@@ -21,8 +21,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bruton's Tribunal",
-  description: "Professional legal services with integrity and excellence",
+  title: "Admin - Bruton's Tribunal",
+  description: "Administrative interface for Bruton's Tribunal",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5, // Allow zoom for accessibility
+  userScalable: true,
 };
 
 export default async function AdminLayout({
