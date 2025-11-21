@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { isMobileDevice } from './src/lib'
+import { isMobileDevice } from './src/lib/pwa'
 
 export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -10,8 +10,8 @@ export default function proxy(request: NextRequest) {
   const hasDesktopOverride = request.cookies.get('force-desktop')?.value === 'true';
   const hasMobileOverride = request.cookies.get('force-mobile')?.value === 'true';
   
-  // Don't redirect if already on PWA path or API routes
-  if (pathname.startsWith('/pwa') || pathname.startsWith('/api') || pathname.startsWith('/_next')) {
+  // Don't redirect if already on PWA path, admin routes, or API routes
+  if (pathname.startsWith('/pwa') || pathname.startsWith('/admin') || pathname.startsWith('/api') || pathname.startsWith('/_next')) {
     return NextResponse.next();
   }
   
@@ -48,8 +48,8 @@ export default function proxy(request: NextRequest) {
     return response;
   }
   
-  // If mobile override is set, redirect to PWA
-  if (hasMobileOverride && !pathname.startsWith('/pwa')) {
+  // If mobile override is set, redirect to PWA (but not for admin routes)
+  if (hasMobileOverride && !pathname.startsWith('/pwa') && !pathname.startsWith('/admin')) {
     return NextResponse.redirect(new URL('/pwa', request.url));
   }
   
