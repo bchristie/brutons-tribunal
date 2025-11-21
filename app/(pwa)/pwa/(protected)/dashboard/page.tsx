@@ -1,14 +1,13 @@
 'use client';
 
 import { useAuth } from '@/src/providers/AuthProvider';
+import { UserAvatar } from '@/src/components';
 
 export default function DashboardPage() {
   const { user } = useAuth();
-
-  const getUserInitials = (name: string | null): string => {
-    if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
+  
+  // Get roles from user (hydrated by AuthProvider from session)
+  const userRoles = (user as any)?.roles || [];
 
   const quickActions = [
     {
@@ -91,19 +90,14 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-            {user?.image ? (
-              <img 
-                src={user.image} 
-                alt={user.name || 'User avatar'}
-                className="w-16 h-16 rounded-full object-cover"
-              />
-            ) : (
-              <span className="text-xl font-semibold text-blue-600 dark:text-blue-300">
-                {getUserInitials(user?.name || null)}
-              </span>
-            )}
-          </div>
+          <UserAvatar
+            name={user?.name}
+            email={user?.email}
+            image={user?.image}
+            roles={userRoles}
+            size="lg"
+            showBadge={true}
+          />
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Welcome back, {user?.name?.split(' ')[0] || 'User'}!

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { UserAvatar } from '@/src/components';
 import type { AuthenticatedWelcomeProps } from './AuthenticatedWelcome.types';
 
 export function AuthenticatedWelcome({ 
@@ -6,21 +7,20 @@ export function AuthenticatedWelcome({
   className = '',
   dashboardHref = '/pwa/dashboard' 
 }: AuthenticatedWelcomeProps) {
+  // Get roles from user (hydrated by AuthProvider from session)
+  const userRoles = (user as any)?.roles || [];
+
   return (
     <div className={`text-center ${className}`}>
-      <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
-        {user.image ? (
-          <img 
-            src={user.image} 
-            alt={user.name || 'User avatar'}
-            className="w-16 h-16 rounded-full object-cover"
-          />
-        ) : (
-          <span className="text-xl font-semibold text-blue-600 dark:text-blue-300">
-            {user.name?.charAt(0) || 'U'}
-          </span>
-        )}
-      </div>
+      <UserAvatar
+        name={user.name}
+        email={user.email}
+        image={user.image}
+        roles={userRoles}
+        size="lg"
+        showBadge={true}
+        className="mx-auto mb-4"
+      />
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
         Welcome back, {user.name || 'User'}!
       </h2>

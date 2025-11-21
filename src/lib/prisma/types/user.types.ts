@@ -39,3 +39,13 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// User with roles included
+export interface UserWithRoles extends User {
+  userRoles?: Array<{
+    role: {
+      name: string;
+    };
+  }>;
+  roles?: string[]; // Computed array of role names
+}

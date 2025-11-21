@@ -1,19 +1,13 @@
 'use client';
 
 import { useAuth } from '@/src/providers/AuthProvider';
-import { useSession } from 'next-auth/react';
+import { UserAvatar } from '@/src/components';
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
-  const { data: session } = useSession();
   
-  // Get roles from session instead of user object
-  const userRoles = (session?.user as any)?.roles || [];
-
-  const getUserInitials = (name: string | null): string => {
-    if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
+  // Get roles from user (hydrated by AuthProvider from session)
+  const userRoles = (user as any)?.roles || [];
 
   const profileSections = [
     {
@@ -40,19 +34,15 @@ export default function ProfilePage() {
       {/* Profile Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
         <div className="flex flex-col items-center text-center">
-          <div className="w-24 h-24 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4">
-            {user?.image ? (
-              <img 
-                src={user.image} 
-                alt={user.name || 'User avatar'}
-                className="w-24 h-24 rounded-full object-cover"
-              />
-            ) : (
-              <span className="text-2xl font-semibold text-blue-600 dark:text-blue-300">
-                {getUserInitials(user?.name || null)}
-              </span>
-            )}
-          </div>
+          <UserAvatar
+            name={user?.name}
+            email={user?.email}
+            image={user?.image}
+            roles={userRoles}
+            size="xl"
+            showBadge={true}
+            className="mb-4"
+          />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {user?.name || 'User'}
           </h1>

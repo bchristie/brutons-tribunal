@@ -8,9 +8,13 @@ import { AuthProviderProps } from './AuthProvider.types';
 /**
  * Main AuthProvider that wraps both SessionProvider and our custom provider
  */
-export function AuthProvider({ children, ...props }: AuthProviderProps) {
+export function AuthProvider({ children, initialSession, ...props }: AuthProviderProps) {
   return (
-    <SessionProvider>
+    <SessionProvider 
+      session={initialSession}      // Pass server-side session to avoid initial fetch
+      refetchInterval={0}           // Disable automatic background refetch (we use server-side initialUser)
+      refetchOnWindowFocus={false}  // Disable refetch on window focus (we use server-side initialUser)
+    >
       <AuthProviderInternal {...props}>
         {children}
       </AuthProviderInternal>

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useApi } from '@/src/providers/GlobalProviders/GlobalProviders';
+import { UserAvatar } from '@/src/components';
 import { UpdateType } from '@prisma/client';
 import type { PublicContentPreviewProps } from './PublicContentPreview.types';
 import type { UpdateWithAuthor } from '@/src/lib/prisma/types/update.types';
@@ -109,6 +110,7 @@ export function PublicContentPreview({ className = '' }: PublicContentPreviewPro
             const linkHref = item.linkHref || '/pwa/join';
             const linkText = item.linkText || 'Sign in to read more →';
             const updateType = getUpdateTypeDisplay(item.type);
+            const authorRoles = item.author?.userRoles?.map((ur: any) => ur.role.name) || [];
             
             return (
               <div key={item.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
@@ -124,9 +126,19 @@ export function PublicContentPreview({ className = '' }: PublicContentPreviewPro
                   {item.description}
                 </p>
                 {item.author && (
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-3">
-                    By {item.author.name || 'Anonymous'} • {new Date(item.publishedAt || item.createdAt).toLocaleDateString()}
-                  </p>
+                  <div className="flex items-center gap-2 mb-3">
+                    <UserAvatar
+                      name={item.author.name}
+                      email={item.author.email}
+                      image={item.author.image}
+                      roles={authorRoles}
+                      size="xs"
+                      showBadge={true}
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-500">
+                      {item.author.name || 'Anonymous'} • {new Date(item.publishedAt || item.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
                 )}
                 <Link 
                   href={linkHref}

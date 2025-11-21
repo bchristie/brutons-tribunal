@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GlobalProviders, AuthProvider } from '@/src/providers';
-import { getCurrentUser } from '@/src/providers/auth/server';
+import { getCurrentUser, getCurrentSession } from '@/src/providers/auth/server';
 import "../globals.css";
 import "./styles.css";
 
@@ -28,8 +28,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch user on server-side to avoid client-side auth state bouncing
-  const user = await getCurrentUser();
+  // Fetch user and session on server-side to avoid client-side auth state bouncing
+  const [user, session] = await Promise.all([
+    getCurrentUser(),
+    getCurrentSession(),
+  ]);
 
   return (
     <html lang="en">
@@ -37,7 +40,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <GlobalProviders>
-          <AuthProvider initialUser={user}>
+          <AuthProvider initialUser={user} initialSession={session}>
             {children}
           </AuthProvider>
         </GlobalProviders>

@@ -83,6 +83,11 @@ export interface UpdateWithAuthor extends Update {
     name: string | null;
     email: string;
     image: string | null;
+    userRoles?: Array<{
+      role: {
+        name: string;
+      };
+    }>;
   };
 }
 

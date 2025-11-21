@@ -34,10 +34,7 @@ export const authOptions: NextAuthOptions = {
         
         // Hydrate permissions into session
         try {
-          console.log('Loading permissions for user:', token.id);
           const userPerms = await permissionRepository.getUserPermissions(token.id as string);
-          console.log('Loaded roles:', userPerms.roles);
-          console.log('Loaded permissions count:', userPerms.permissions.size);
           (session.user as any).permissions = Array.from(userPerms.permissions);
           (session.user as any).roles = userPerms.roles;
         } catch (error) {

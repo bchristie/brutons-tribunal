@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from './config';
 import { userRepository, permissionRepository } from '../../lib/prisma';
-import type { User } from '../../lib/prisma/types';
+import type { UserWithRoles } from '../../lib/prisma/types';
 
 /**
  * Server-side utility to get the current session
@@ -16,9 +16,9 @@ export async function getCurrentSession() {
 }
 
 /**
- * Server-side utility to get the current user with full data from database
+ * Server-side utility to get the current user with full data from database (including roles)
  */
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser(): Promise<UserWithRoles | null> {
   try {
     const session = await getCurrentSession();
     
@@ -29,13 +29,13 @@ export async function getCurrentUser(): Promise<User | null> {
     // Try to get user by ID first (if available in token)
     const userId = (session.user as any).id;
     if (userId) {
-      const user = await userRepository.findById(userId);
+      const user = await userRepository.findById(userId, true); // true = include roles
       if (user) return user;
     }
 
     // Fallback: find user by email (for existing sessions before ID was added)
     if (session.user.email) {
-      const user = await userRepository.findByEmail(session.user.email);
+      const user = await userRepository.findByEmail(session.user.email, true); // true = include roles
       return user;
     }
 
@@ -68,7 +68,7 @@ export async function hasRole(roleName: string): Promise<boolean> {
  * Server-side utility to require authentication (for pages)
  * Throws error if not authenticated - can be caught by error boundaries
  */
-export async function requireAuth(): Promise<User> {
+export async function requireAuth(): Promise<UserWithRoles> {
   const user = await getCurrentUser();
   
   if (!user) {
@@ -81,7 +81,7 @@ export async function requireAuth(): Promise<User> {
 /**
  * Server-side utility to require specific role
  */
-export async function requireRole(roleName: string): Promise<User> {
+export async function requireRole(roleName: string): Promise<UserWithRoles> {
   const user = await requireAuth();
   
   const hasRequiredRole = await permissionRepository.hasRole(user.id, roleName);
@@ -96,7 +96,7 @@ export async function requireRole(roleName: string): Promise<User> {
  * Utility for API route protection (for app/(api) endpoints)
  */
 export async function protectApiRoute(requiredRole?: string): Promise<{
-  user: User;
+  user: UserWithRoles;
   error?: never;
 } | {
   user?: never;

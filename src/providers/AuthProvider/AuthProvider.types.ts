@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import type { Session } from 'next-auth';
 import type { User } from '@/src/lib/prisma/types';
 
 export interface AuthContextType {
@@ -15,4 +16,5 @@ export interface AuthContextType {
 export interface AuthProviderProps {
   children: ReactNode;
   initialUser?: User | null;
+  initialSession?: Session | null;
 }

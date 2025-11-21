@@ -1,6 +1,6 @@
 import { BaseRepository } from './BaseRepository';
 import { prisma } from './prisma';
-import type { User, UserCreateInput, UserUpdateInput, UserQueryOptions } from './types/user.types';
+import type { User, UserWithRoles, UserCreateInput, UserUpdateInput, UserQueryOptions } from './types/user.types';
 
 /**
  * User Repository class extending BaseRepository
@@ -19,12 +19,57 @@ export class UserRepository extends BaseRepository<User, UserCreateInput, UserUp
   }
 
   /**
-   * Find a user by email address
+   * Get the include object for fetching user with roles
    */
-  async findByEmail(email: string): Promise<User | null> {
-    return await this.getDelegate().findUnique({
-      where: { email },
+  private getRolesInclude() {
+    return {
+      userRoles: {
+        include: {
+          role: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    };
+  }
+
+  /**
+   * Transform user with userRoles to include computed roles array
+   */
+  private transformUserWithRoles(user: any): UserWithRoles {
+    if (!user) return user;
+    
+    const roles = user.userRoles?.map((ur: any) => ur.role.name) || [];
+    return {
+      ...user,
+      roles,
+    };
+  }
+
+  /**
+   * Find a user by ID (overridden to include roles)
+   */
+  async findById(id: string, includeRoles: boolean = true): Promise<UserWithRoles | null> {
+    const user = await this.getDelegate().findUnique({
+      where: { id },
+      ...(includeRoles && { include: this.getRolesInclude() }),
     });
+    
+    return includeRoles ? this.transformUserWithRoles(user) : user;
+  }
+
+  /**
+   * Find a user by email address (overridden to include roles)
+   */
+  async findByEmail(email: string, includeRoles: boolean = true): Promise<UserWithRoles | null> {
+    const user = await this.getDelegate().findUnique({
+      where: { email },
+      ...(includeRoles && { include: this.getRolesInclude() }),
+    });
+    
+    return includeRoles ? this.transformUserWithRoles(user) : user;
   }
 
   /**

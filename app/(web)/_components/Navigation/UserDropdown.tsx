@@ -4,13 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useScroll } from '@/app/(web)/_providers';
 import { useAuth } from '@/src/providers/AuthProvider';
+import { UserAvatar } from '@/src/components';
 import type { UserDropdownProps, UserMenuItemProps } from './UserDropdown.types';
-
-// Helper function to get user initials
-function getUserInitials(name: string | null): string {
-  if (!name) return 'U';
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-}
 
 function UserMenuItem({ icon, label, href, onClick, variant = 'default' }: UserMenuItemProps) {
   const baseClasses = `
@@ -56,8 +51,8 @@ export function UserDropdown({
   const currentVariant = variant === 'auto' ? headerVariant : variant;
   const isOverlay = currentVariant === 'overlay';
 
-  // Get user initials for display
-  const userInitials = user ? getUserInitials(user.name) : 'U';
+  // Get user roles for avatar
+  const userRoles = (user as any)?.roles || [];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -147,23 +142,14 @@ export function UserDropdown({
         aria-label="User menu"
       >
         {/* User Avatar */}
-        <div className={`
-          w-8 h-8 rounded-full flex items-center justify-center font-medium text-sm
-          ${isOverlay 
-            ? 'bg-white/20 text-white' 
-            : 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300'
-          }
-        `}>
-          {user.image ? (
-            <img 
-              src={user.image} 
-              alt={user.name || 'User avatar'}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-          ) : (
-            userInitials
-          )}
-        </div>
+        <UserAvatar
+          name={user.name}
+          email={user.email}
+          image={user.image}
+          roles={userRoles}
+          size="sm"
+          showBadge={true}
+        />
 
         {/* Dropdown Arrow */}
         <svg 

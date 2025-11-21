@@ -45,7 +45,9 @@ export function AuthIndicator({ show = true }: AuthIndicatorProps) {
     if (isAuthenticated) {
       // Show user info if available, otherwise show session info
       if (user) {
-        return `Signed in as ${user.name || user.email}\nMode: ${mode}\nClick to sign out`;
+        const userRoles = (user as any)?.roles || [];
+        const rolesText = userRoles.length > 0 ? `\nRoles: ${userRoles.join(', ')}` : '\nRoles: None';
+        return `Signed in as ${user.name || user.email}${rolesText}\nMode: ${mode}\nClick to sign out`;
       } else {
         return `Signed in (user data loading...)\nMode: ${mode}\nClick to sign out`;
       }

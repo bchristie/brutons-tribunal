@@ -26,6 +26,23 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
   }
 
   /**
+   * Helper to get author include with roles
+   */
+  private getAuthorInclude() {
+    return {
+      author: {
+        include: {
+          userRoles: {
+            include: {
+              role: true,
+            },
+          },
+        },
+      },
+    };
+  }
+
+  /**
    * Find published updates only (default public view)
    */
   async findPublished(options?: {
@@ -59,7 +76,7 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
         publishedAt: { lte: new Date() }
       },
       orderBy: { publishedAt: 'desc' },
-      include: includeAuthor ? { author: true } : undefined,
+      include: includeAuthor ? this.getAuthorInclude() : undefined,
     });
   }
 
@@ -70,7 +87,7 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
     return await this.getDelegate().findMany({
       where: { authorId },
       orderBy: { createdAt: 'desc' },
-      include: includeAuthor ? { author: true } : undefined,
+      include: includeAuthor ? this.getAuthorInclude() : undefined,
     });
   }
 
@@ -98,7 +115,7 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
         ],
       },
       orderBy: { publishedAt: 'desc' },
-      include: includeAuthor ? { author: true } : undefined,
+      include: includeAuthor ? this.getAuthorInclude() : undefined,
     });
   }
 
@@ -119,7 +136,7 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
       },
       orderBy: { publishedAt: 'desc' },
       take,
-      include: { author: true },
+      include: this.getAuthorInclude(),
     });
   }
 
@@ -149,7 +166,7 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
       },
       orderBy: { publishedAt: 'desc' },
       take: limit,
-      include: { author: true },
+      include: this.getAuthorInclude(),
     });
   }
 
@@ -193,7 +210,7 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
         },
         orderBy: { publishedAt: 'desc' },
         take: 5,
-        include: { author: true },
+        include: this.getAuthorInclude(),
       }),
     ]);
 
@@ -241,7 +258,7 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
         },
       },
       orderBy: { publishedAt: 'desc' },
-      include: includeAuthor ? { author: true } : undefined,
+      include: includeAuthor ? this.getAuthorInclude() : undefined,
     });
   }
 }

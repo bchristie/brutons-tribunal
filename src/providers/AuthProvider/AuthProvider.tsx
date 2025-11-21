@@ -16,6 +16,7 @@ export function useAuth() {
 }
 
 function AuthProviderInternal({ children, initialUser }: AuthProviderProps) {
+  // Use session primarily for auth status - we have initialUser from server with roles already
   const { data: session, status } = useSession();
   const [user, setUser] = useState(initialUser || null);
   const [isOnline, setIsOnline] = useState(true);
@@ -49,19 +50,31 @@ function AuthProviderInternal({ children, initialUser }: AuthProviderProps) {
   useEffect(() => {
     if (status === 'unauthenticated') {
       setUser(null);
-    } else if (status === 'authenticated' && session?.user && !user && !initialUser) {
-      // Create fallback user from session data when database user isn't available
-      const fallbackUser = {
-        id: (session.user as any).id || 'session-user',
-        email: session.user.email || '',
-        name: session.user.name || null,
-        image: session.user.image || null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setUser(fallbackUser);
+    } else if (status === 'authenticated' && session?.user) {
+      // If we have initialUser (from server), use it but merge in session data (like roles)
+      if (initialUser) {
+        const mergedUser = {
+          ...initialUser,
+          ...(session.user as any).roles && { roles: (session.user as any).roles },
+          ...(session.user as any).permissions && { permissions: (session.user as any).permissions },
+        };
+        setUser(mergedUser as any);
+      } else if (!user) {
+        // Create fallback user from session data when database user isn't available
+        const fallbackUser = {
+          id: (session.user as any).id || 'session-user',
+          email: session.user.email || '',
+          name: session.user.name || null,
+          image: session.user.image || null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...(session.user as any).roles && { roles: (session.user as any).roles },
+          ...(session.user as any).permissions && { permissions: (session.user as any).permissions },
+        };
+        setUser(fallbackUser);
+      }
     }
-  }, [status, session, user, initialUser]);
+  }, [status, session, initialUser]);
 
   const refreshUser = async () => {
     try {

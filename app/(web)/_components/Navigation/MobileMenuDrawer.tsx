@@ -3,13 +3,8 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useAuth } from '@/src/providers/AuthProvider';
+import { UserAvatar } from '@/src/components';
 import type { MobileMenuDrawerProps } from './Navigation.types';
-
-// Helper function to get user initials
-function getUserInitials(name: string | null): string {
-  if (!name) return 'U';
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-}
 
 export function MobileMenuDrawer({ 
   items, 
@@ -18,8 +13,9 @@ export function MobileMenuDrawer({
 }: MobileMenuDrawerProps) {
   const { user, isAuthenticated, isLoading, signIn, signOut } = useAuth();
 
-  // Get user initials for display
-  const userInitials = user ? getUserInitials(user.name) : 'U';
+  // Get user roles for avatar
+  const userRoles = (user as any)?.roles || [];
+
   // Close on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -134,17 +130,14 @@ export function MobileMenuDrawer({
             <div className="space-y-4">
               {/* User Info */}
               <div className="flex items-center space-x-3 p-3 bg-theme-primary rounded-lg">
-                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300 flex items-center justify-center font-medium text-sm">
-                  {user.image ? (
-                    <img 
-                      src={user.image} 
-                      alt={user.name || 'User avatar'}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  ) : (
-                    userInitials
-                  )}
-                </div>
+                <UserAvatar
+                  name={user.name}
+                  email={user.email}
+                  image={user.image}
+                  roles={userRoles}
+                  size="md"
+                  showBadge={true}
+                />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-theme-primary truncate">
                     {user.name || 'User'}
