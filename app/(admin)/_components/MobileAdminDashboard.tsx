@@ -2,19 +2,14 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/src/providers/AuthProvider';
-import { UserAvatar } from '@/src/components';
 
 /**
  * Mobile Admin Dashboard
- * Optimized for mobile devices with:
- * - Card-based layout
- * - Large touch targets
- * - Essential actions only
- * - Simplified navigation
+ * Dashboard content for mobile view
+ * Navigation is handled by AdminShell
  */
 export function MobileAdminDashboard() {
   const { user } = useAuth();
-  const userRoles = (user as any)?.roles || [];
 
   const adminActions = [
     {
@@ -48,27 +43,15 @@ export function MobileAdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen p-4 pb-20">
-      {/* Header */}
+    <div className="p-4">
+      {/* Welcome Section */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Admin Panel
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Mobile View
-            </p>
-          </div>
-          <UserAvatar
-            name={user?.name}
-            email={user?.email}
-            image={user?.image}
-            roles={userRoles}
-            size="md"
-            showBadge={true}
-          />
-        </div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+          Dashboard
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Welcome back, {user?.name}
+        </p>
       </div>
 
       {/* Quick Stats */}
