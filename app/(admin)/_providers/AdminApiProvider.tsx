@@ -1,9 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { AdminApiContextValue, AdminApiProviderProps, DashboardStats } from './AdminApiProvider.types';
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { AdminApiContextValue, AdminApiProviderProps, DashboardStats, CachedData } from './AdminApiProvider.types';
 
 const AdminApiContext = createContext<AdminApiContextValue | undefined>(undefined);
+
+// Cache TTL: 2 minutes (can be adjusted)
+const CACHE_TTL = 2 * 60 * 1000;
 
 export function useAdminApi() {
   const context = useContext(AdminApiContext);
@@ -14,13 +17,18 @@ export function useAdminApi() {
 }
 
 export function AdminApiProvider({ children }: AdminApiProviderProps) {
-  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
-  const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
-  const [dashboardError, setDashboardError] = useState<string | null>(null);
+  const [dashboardCache, setDashboardCache] = useState<CachedData<DashboardStats> | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isDashboardStale = useCallback(() => {
+    if (!dashboardCache) return true;
+    return Date.now() - dashboardCache.timestamp > CACHE_TTL;
+  }, [dashboardCache]);
 
   const refreshDashboard = useCallback(async () => {
-    setIsLoadingDashboard(true);
-    setDashboardError(null);
+    setIsLoading(true);
+    setError(null);
 
     try {
       const response = await fetch('/api/admin/dashboard', {
@@ -31,30 +39,35 @@ export function AdminApiProvider({ children }: AdminApiProviderProps) {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch dashboard data');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch dashboard data');
       }
 
       const data: DashboardStats = await response.json();
-      setDashboardStats(data);
-    } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
-      setDashboardError(error instanceof Error ? error.message : 'Unknown error');
+      setDashboardCache({
+        data,
+        timestamp: Date.now(),
+      });
+    } catch (err) {
+      console.error('Error fetching dashboard stats:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
-      setIsLoadingDashboard(false);
+      setIsLoading(false);
     }
   }, []);
 
-  // Load dashboard stats on mount
-  useEffect(() => {
-    refreshDashboard();
-  }, [refreshDashboard]);
+  const clearCache = useCallback(() => {
+    setDashboardCache(null);
+    setError(null);
+  }, []);
 
   const value: AdminApiContextValue = {
-    dashboardStats,
-    isLoadingDashboard,
-    dashboardError,
+    dashboardStats: dashboardCache?.data ?? null,
     refreshDashboard,
+    isDashboardStale,
+    isLoading,
+    error,
+    clearCache,
   };
 
   return (

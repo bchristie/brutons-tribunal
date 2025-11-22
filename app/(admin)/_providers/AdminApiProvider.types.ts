@@ -26,12 +26,23 @@ export interface DashboardStats {
   timestamp: string;
 }
 
+export interface CachedData<T> {
+  data: T;
+  timestamp: number;
+}
+
 export interface AdminApiContextValue {
   // Dashboard
   dashboardStats: DashboardStats | null;
-  isLoadingDashboard: boolean;
-  dashboardError: string | null;
   refreshDashboard: () => Promise<void>;
+  isDashboardStale: () => boolean;
+  
+  // Generic loading and error state for any admin API operation
+  isLoading: boolean;
+  error: string | null;
+  
+  // Cache management
+  clearCache: () => void;
   
   // Add more admin API methods here as needed
   // users: { ... }

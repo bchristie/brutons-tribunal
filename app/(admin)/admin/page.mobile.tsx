@@ -2,6 +2,8 @@
 
 import { useAuth } from '@/src/providers/AuthProvider';
 import { useAdminApi } from '../_providers/AdminApiProvider';
+import { usePullToRefresh } from '@/src/hooks';
+import { RefreshIndicator } from '@/src/components';
 import { 
   DashboardWelcome, 
   DashboardGrid, 
@@ -9,6 +11,7 @@ import {
   RecentActivity,
   LoadingSpinner 
 } from '../_components';
+import { useEffect } from 'react';
 
 /**
  * Mobile Admin Dashboard Page
@@ -16,10 +19,22 @@ import {
  */
 export function MobileAdminPage() {
   const { user } = useAuth();
-  const { dashboardStats, isLoadingDashboard } = useAdminApi();
+  const { dashboardStats, isLoading, refreshDashboard, isDashboardStale } = useAdminApi();
+  
+  // Load dashboard data on mount (with stale check)
+  useEffect(() => {
+    if (!dashboardStats || isDashboardStale()) {
+      refreshDashboard();
+    }
+  }, [dashboardStats, isDashboardStale, refreshDashboard]);
+  
+  // Pull-to-refresh gesture
+  const { isRefreshing, pullDistance, isThresholdReached } = usePullToRefresh({
+    onRefresh: refreshDashboard,
+  });
 
   // Show loading state
-  if (isLoadingDashboard || !dashboardStats) {
+  if (isLoading || !dashboardStats) {
     return <LoadingSpinner size="md" message="Loading dashboard..." fullScreen />;
   }
 
@@ -38,6 +53,13 @@ export function MobileAdminPage() {
 
   return (
     <div className="p-4">
+      {/* Pull-to-Refresh Indicator */}
+      <RefreshIndicator 
+        isRefreshing={isRefreshing}
+        pullDistance={pullDistance}
+        isThresholdReached={isThresholdReached}
+      />
+
       {/* Welcome Section */}
       <DashboardWelcome userName={user?.name} />
 

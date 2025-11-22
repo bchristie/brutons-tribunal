@@ -9,6 +9,7 @@ import {
   RecentActivity,
   LoadingSpinner 
 } from '../_components';
+import { useEffect } from 'react';
 
 /**
  * Desktop Admin Dashboard Page
@@ -16,10 +17,17 @@ import {
  */
 export function DesktopAdminPage() {
   const { user } = useAuth();
-  const { dashboardStats, isLoadingDashboard } = useAdminApi();
+  const { dashboardStats, isLoading, refreshDashboard, isDashboardStale } = useAdminApi();
+
+  // Load dashboard data on mount (with stale check)
+  useEffect(() => {
+    if (!dashboardStats || isDashboardStale()) {
+      refreshDashboard();
+    }
+  }, [dashboardStats, isDashboardStale, refreshDashboard]);
 
   // Show loading state
-  if (isLoadingDashboard || !dashboardStats) {
+  if (isLoading || !dashboardStats) {
     return <LoadingSpinner size="lg" message="Loading dashboard..." fullScreen />;
   }
 
