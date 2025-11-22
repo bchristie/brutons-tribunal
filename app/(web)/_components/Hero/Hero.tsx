@@ -25,9 +25,9 @@ export function Hero({
   // Convert height prop to CSS class
   const getHeightClass = (h: string) => {
     switch (h) {
-      case 'screen': return 'h-screen';
-      case '75vh': return 'h-[75vh]';
-      case '50vh': return 'h-[50vh]';
+      case 'screen': return 'h-dvh';
+      case '75vh': return 'h-[75dvh]';
+      case '50vh': return 'h-[50dvh]';
       default: return h.startsWith('h-') ? h : `h-[${h}]`;
     }
   };

@@ -26,7 +26,7 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
   // Show loading while checking auth
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-dvh flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -61,7 +61,7 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 flex flex-col">
       {/* Content Area - Takes up available space above bottom nav */}
       <div className="flex-1 pb-16 overflow-y-auto">
         {children}

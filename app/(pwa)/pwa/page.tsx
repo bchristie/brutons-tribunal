@@ -22,7 +22,7 @@ export default function PWAHomePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -31,9 +31,9 @@ export default function PWAHomePage() {
   const bottomOffset = isAuthenticated ? 'bottom-4' : 'bottom-32';
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-dvh">
       {/* Hero Section with Background Image */}
-      <div className="relative h-screen flex items-center justify-center overflow-hidden">
+      <div className="relative h-dvh flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
