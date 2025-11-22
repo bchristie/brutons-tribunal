@@ -87,6 +87,7 @@ export async function GET(request: NextRequest) {
           author: 'System',
           publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
           status: 'published',
+          statusColor: 'green' as const,
         },
         {
           id: '2',
@@ -94,6 +95,7 @@ export async function GET(request: NextRequest) {
           author: 'Admin',
           publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
           status: 'published',
+          statusColor: 'blue' as const,
         },
         {
           id: '3',
@@ -101,6 +103,7 @@ export async function GET(request: NextRequest) {
           author: 'System',
           publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
           status: 'published',
+          statusColor: 'purple' as const,
         },
       ],
     };

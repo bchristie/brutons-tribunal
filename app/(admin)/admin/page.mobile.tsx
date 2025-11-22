@@ -1,7 +1,14 @@
 'use client';
 
 import { useAuth } from '@/src/providers/AuthProvider';
-import { DashboardWelcome, DashboardGrid, DashboardStat, RecentActivity } from '../_components';
+import { useAdminApi } from '../_providers/AdminApiProvider';
+import { 
+  DashboardWelcome, 
+  DashboardGrid, 
+  DashboardStat, 
+  RecentActivity,
+  LoadingSpinner 
+} from '../_components';
 
 /**
  * Mobile Admin Dashboard Page
@@ -9,12 +16,25 @@ import { DashboardWelcome, DashboardGrid, DashboardStat, RecentActivity } from '
  */
 export function MobileAdminPage() {
   const { user } = useAuth();
+  const { dashboardStats, isLoadingDashboard } = useAdminApi();
 
-  const activities = [
-    { icon: '👤', event: 'New user registered', time: '2 hours ago', statusColor: 'blue' as const },
-    { icon: '🎭', event: 'Role permissions updated', time: '5 hours ago', statusColor: 'purple' as const },
-    { icon: '📝', event: 'Content published', time: '1 day ago', statusColor: 'green' as const },
-  ];
+  // Show loading state
+  if (isLoadingDashboard || !dashboardStats) {
+    return <LoadingSpinner size="md" message="Loading dashboard..." fullScreen />;
+  }
+
+  // Map API updates to activity items
+  const activities = dashboardStats.updates.recentUpdates.map(update => ({
+    event: update.title,
+    time: new Date(update.publishedAt).toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      month: 'short',
+      day: 'numeric',
+    }),
+    statusColor: update.statusColor,
+  }));
 
   return (
     <div className="p-4">
@@ -23,10 +43,26 @@ export function MobileAdminPage() {
 
       {/* Quick Stats */}
       <DashboardGrid>
-        <DashboardStat label="Users" value={12} color="blue" />
-        <DashboardStat label="Roles" value={3} color="purple" />
-        <DashboardStat label="Updates" value={24} color="green" />
-        <DashboardStat label="Permissions" value={16} color="gray" />
+        <DashboardStat 
+          label="Users" 
+          value={dashboardStats.users.total} 
+          color="blue" 
+        />
+        <DashboardStat 
+          label="Roles" 
+          value={dashboardStats.roles.total} 
+          color="purple" 
+        />
+        <DashboardStat 
+          label="Updates" 
+          value={dashboardStats.updates.total} 
+          color="green" 
+        />
+        <DashboardStat 
+          label="Permissions" 
+          value={dashboardStats.permissions.total} 
+          color="gray" 
+        />
       </DashboardGrid>
 
       {/* Recent Activity */}

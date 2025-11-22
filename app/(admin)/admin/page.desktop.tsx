@@ -1,7 +1,14 @@
 'use client';
 
 import { useAuth } from '@/src/providers/AuthProvider';
-import { DashboardWelcome, DashboardGrid, DashboardStat, RecentActivity } from '../_components';
+import { useAdminApi } from '../_providers/AdminApiProvider';
+import { 
+  DashboardWelcome, 
+  DashboardGrid, 
+  DashboardStat, 
+  RecentActivity,
+  LoadingSpinner 
+} from '../_components';
 
 /**
  * Desktop Admin Dashboard Page
@@ -9,12 +16,27 @@ import { DashboardWelcome, DashboardGrid, DashboardStat, RecentActivity } from '
  */
 export function DesktopAdminPage() {
   const { user } = useAuth();
+  const { dashboardStats, isLoadingDashboard } = useAdminApi();
 
-  const activities = [
-    { icon: '👤', event: 'New user registered', user: 'john.doe@example.com', time: '2 hours ago', status: 'Active', statusColor: 'green' as const },
-    { icon: '🎭', event: 'Role permissions updated', user: 'admin@example.com', time: '5 hours ago', status: 'Completed', statusColor: 'blue' as const },
-    { icon: '📝', event: 'Content published', user: 'editor@example.com', time: '1 day ago', status: 'Published', statusColor: 'purple' as const },
-  ];
+  // Show loading state
+  if (isLoadingDashboard || !dashboardStats) {
+    return <LoadingSpinner size="lg" message="Loading dashboard..." fullScreen />;
+  }
+
+  // Map API updates to activity items with full desktop details
+  const activities = dashboardStats.updates.recentUpdates.map(update => ({
+    event: update.title,
+    user: update.author,
+    time: new Date(update.publishedAt).toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      month: 'short',
+      day: 'numeric',
+    }),
+    status: update.status.charAt(0).toUpperCase() + update.status.slice(1),
+    statusColor: update.statusColor,
+  }));
 
   return (
     <div className="p-8">
@@ -25,30 +47,30 @@ export function DesktopAdminPage() {
       <DashboardGrid>
         <DashboardStat
           label="Total Users"
-          value={12}
+          value={dashboardStats.users.total}
           icon="👥"
-          subtext="+2 this week"
+          subtext={`+${dashboardStats.users.newThisWeek} this week`}
           color="green"
         />
         <DashboardStat
           label="Total Roles"
-          value={3}
+          value={dashboardStats.roles.total}
           icon="🎭"
-          subtext="Admin, Editor, Viewer"
+          subtext={dashboardStats.roles.names.join(', ')}
           color="gray"
         />
         <DashboardStat
           label="Permissions"
-          value={16}
+          value={dashboardStats.permissions.total}
           icon="🔐"
-          subtext="4 resources"
+          subtext={`${dashboardStats.roles.total} roles configured`}
           color="gray"
         />
         <DashboardStat
           label="Updates"
-          value={24}
+          value={dashboardStats.updates.total}
           icon="📝"
-          subtext="3 published today"
+          subtext={`${dashboardStats.updates.publishedToday} published today`}
           color="blue"
         />
       </DashboardGrid>

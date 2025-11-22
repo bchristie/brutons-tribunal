@@ -20,6 +20,7 @@ export interface DashboardStats {
       author: string;
       publishedAt: string;
       status: string;
+      statusColor: 'green' | 'blue' | 'purple' | 'gray';
     }>;
   };
   timestamp: string;

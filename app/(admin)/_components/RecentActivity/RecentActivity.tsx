@@ -82,8 +82,8 @@ export function RecentActivity({ activities }: RecentActivityProps) {
             {activities.map((activity, index) => (
               <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <span>{activity.icon}</span>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full`}></div>
                     <span className="text-sm text-gray-900 dark:text-white">{activity.event}</span>
                   </div>
                 </td>
