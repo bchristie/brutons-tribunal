@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { UserAvatar } from '@/src/components';
+import { useAuth } from '@/src/providers/AuthProvider';
 import type { AuthenticatedWelcomeProps } from './AuthenticatedWelcome.types';
 
 export function AuthenticatedWelcome({ 
@@ -8,15 +9,16 @@ export function AuthenticatedWelcome({
   dashboardHref = '/pwa/dashboard' 
 }: AuthenticatedWelcomeProps) {
   // Get roles from user (hydrated by AuthProvider from session)
-  const userRoles = (user as any)?.roles || [];
+  const { isAdmin, userRoles } = useAuth();
 
   return (
     <div className={`text-center ${className}`}>
+      <p>{userRoles}</p>
       <UserAvatar
         name={user.name}
         email={user.email}
         image={user.image}
-        roles={userRoles}
+        roles={userRoles ?? undefined}
         size="lg"
         showBadge={true}
         className="mx-auto mb-4"
@@ -27,12 +29,22 @@ export function AuthenticatedWelcome({
       <p className="text-gray-600 dark:text-gray-400 mb-4">
         Ready to dive into your personalized experience?
       </p>
-      <Link
-        href={dashboardHref}
-        className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-      >
-        Go to Dashboard
-      </Link>
+      <div className="flex items-center justify-center gap-3">
+        <Link
+          href={dashboardHref}
+          className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+        >
+          Dashboard
+        </Link>
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="inline-flex items-center justify-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Admin Portal
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

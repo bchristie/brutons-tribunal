@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSession, signIn as nextAuthSignIn, signOut } from 'next-auth/react';
 import { AuthContextType, AuthProviderProps } from './AuthProvider.types';
 import { useMobileDetection } from '@/src/hooks/useMobileDetection';
+import { Roles } from '@/src/lib/permissions/permissions';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -99,10 +100,15 @@ function AuthProviderInternal({ children, initialUser }: AuthProviderProps) {
     await signOut({ callbackUrl });
   };
 
+  // Check if user has admin role
+  const isAdmin = (user as any)?.roles?.some((role: any) => role === Roles.ADMIN) ?? false;
+
   const value: AuthContextType = {
     user: user, // Always use server-provided user data when available
+    userRoles: (user as any)?.roles || null,
     isLoading: status === 'loading',
     isAuthenticated: !!session?.user,
+    isAdmin,
     isOnline,
     mode: detectedMode,
     signIn,
