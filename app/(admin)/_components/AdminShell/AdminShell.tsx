@@ -61,7 +61,7 @@ export function AdminShell({ children }: AdminShellProps) {
 
   if (isMobile) {
     return (
-      <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-dvh">
         {/* Mobile Header */}
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-bold">Admin</h1>
