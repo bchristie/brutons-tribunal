@@ -1,10 +1,12 @@
 'use client';
 
+import Link from 'next/link';
+import { FaBullhorn, FaChartSimple, FaGear, FaUserGroup, FaUserLock } from 'react-icons/fa6';
 import { useMobileDetection } from '@/src/hooks/useMobileDetection';
 import { useAuth } from '@/src/providers';
-import Link from 'next/link';
 import { UserAvatar } from '@/src/components';
 import { usePathname } from 'next/navigation';
+import { AdminShellProps } from './AdminShell.types';
 
 /**
  * AdminShell Component
@@ -12,17 +14,17 @@ import { usePathname } from 'next/navigation';
  * - Mobile: Bottom navigation + header
  * - Desktop: Sidebar navigation
  */
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminShell({ children }: AdminShellProps) {
   const { isMobile, windowWidth } = useMobileDetection();
   const { user } = useAuth();
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/admin', label: 'Dashboard', icon: '📊' },
-    { href: '/admin/users', label: 'Users', icon: '👥' },
-    { href: '/admin/roles', label: 'Roles', icon: '🔐' },
-    { href: '/admin/updates', label: 'Updates', icon: '📝' },
-    { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
+    { href: '/admin', label: 'Dashboard', icon: <FaChartSimple /> },
+    { href: '/admin/users', label: 'Users', icon: <FaUserGroup /> },
+    //{ href: '/admin/roles', label: 'Roles', icon: <FaUserLock /> },
+    { href: '/admin/updates', label: 'Updates', icon: <FaBullhorn /> },
+    { href: '/admin/settings', label: 'Settings', icon: <FaGear /> },
   ];
 
   // Show full-screen loading state until device type is determined

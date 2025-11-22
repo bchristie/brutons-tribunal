@@ -1,3 +1,4 @@
 export * from './AdminShell';
-export * from './MobileAdminDashboard';
-export * from './DesktopAdminDashboard';
+export * from './DashboardWelcome';
+export * from './DashboardStats';
+export * from './RecentActivity';
