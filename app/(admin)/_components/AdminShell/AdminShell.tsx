@@ -7,6 +7,7 @@ import { useAuth } from '@/src/providers';
 import { UserAvatar } from '@/src/components';
 import { usePathname } from 'next/navigation';
 import { AdminShellProps } from './AdminShell.types';
+import { useState, useRef, useEffect } from 'react';
 
 /**
  * AdminShell Component
@@ -16,8 +17,10 @@ import { AdminShellProps } from './AdminShell.types';
  */
 export function AdminShell({ children }: AdminShellProps) {
   const { isMobile, windowWidth } = useMobileDetection();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const pathname = usePathname();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: <FaChartSimple /> },
@@ -26,6 +29,23 @@ export function AdminShell({ children }: AdminShellProps) {
     { href: '/admin/updates', label: 'Updates', icon: <FaBullhorn /> },
     { href: '/admin/settings', label: 'Settings', icon: <FaGear /> },
   ];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   // Show full-screen loading state until device type is determined
   if (windowWidth === undefined) {
@@ -46,14 +66,43 @@ export function AdminShell({ children }: AdminShellProps) {
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-bold">Admin</h1>
           {user && (
-            <UserAvatar
-              name={user.name}
-              email={user.email}
-              image={user.image}
-              roles={(user as any).roles}
-              size="sm"
-              showBadge={true}
-            />
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="focus:outline-none"
+              >
+                <UserAvatar
+                  name={user.name}
+                  email={user.email}
+                  image={user.image}
+                  roles={(user as any).roles}
+                  size="sm"
+                  showBadge={true}
+                />
+              </button>
+
+              {/* Dropdown Menu */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                  <Link
+                    href="/"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Return to Site
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      signOut('/');
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </header>
 
