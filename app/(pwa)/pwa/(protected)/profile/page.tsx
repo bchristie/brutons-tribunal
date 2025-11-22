@@ -1,10 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useAuth } from '@/src/providers/AuthProvider';
 import { UserAvatar } from '@/src/components';
 
 export default function ProfilePage() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   
   // Get roles from user (hydrated by AuthProvider from session)
   const userRoles = (user as any)?.roles || [];
@@ -77,6 +78,15 @@ export default function ProfilePage() {
 
       {/* Actions */}
       <div className="space-y-3">
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="w-full block text-center bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            Admin Portal
+          </Link>
+        )}
+        
         {/*<button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
           Edit Profile
         </button>*/}
