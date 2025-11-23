@@ -1,24 +1,20 @@
 'use client';
 
-import { useMobileDetection } from '@/src/hooks/useMobileDetection';
+import { UserList } from '../../_components';
 
 export default function UsersPage() {
-  const { isMobile } = useMobileDetection();
-
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-        User Management
-      </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-8">
-        {isMobile ? 'Mobile View' : 'Desktop View'}
-      </p>
-      
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+    <div className="p-4 md:p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          User Management
+        </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          User management interface coming soon...
+          Manage user accounts and permissions
         </p>
       </div>
+      
+      <UserList />
     </div>
   );
 }

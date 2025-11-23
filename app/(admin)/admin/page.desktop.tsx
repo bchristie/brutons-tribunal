@@ -17,14 +17,12 @@ import { useEffect } from 'react';
  */
 export function DesktopAdminPage() {
   const { user } = useAuth();
-  const { dashboardStats, isLoading, refreshDashboard, isDashboardStale } = useAdminApi();
+  const { dashboardStats, isLoading, refreshDashboard } = useAdminApi();
 
-  // Load dashboard data on mount (with stale check)
+  // Load dashboard data on mount (provider checks staleness)
   useEffect(() => {
-    if (!dashboardStats || isDashboardStale()) {
-      refreshDashboard();
-    }
-  }, [dashboardStats, isDashboardStale, refreshDashboard]);
+    refreshDashboard();
+  }, [refreshDashboard]);
 
   // Show loading state
   if (isLoading || !dashboardStats) {

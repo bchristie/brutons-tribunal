@@ -19,18 +19,16 @@ import { useEffect } from 'react';
  */
 export function MobileAdminPage() {
   const { user } = useAuth();
-  const { dashboardStats, isLoading, refreshDashboard, isDashboardStale } = useAdminApi();
+  const { dashboardStats, isLoading, refreshDashboard } = useAdminApi();
   
-  // Load dashboard data on mount (with stale check)
+  // Load dashboard data on mount (provider checks staleness)
   useEffect(() => {
-    if (!dashboardStats || isDashboardStale()) {
-      refreshDashboard();
-    }
-  }, [dashboardStats, isDashboardStale, refreshDashboard]);
+    refreshDashboard();
+  }, [refreshDashboard]);
   
-  // Pull-to-refresh gesture
+  // Pull-to-refresh gesture (force refresh)
   const { isRefreshing, pullDistance, isThresholdReached } = usePullToRefresh({
-    onRefresh: refreshDashboard,
+    onRefresh: () => refreshDashboard(true),
   });
 
   // Show loading state
