@@ -5,18 +5,34 @@ import { useAdminApi } from '../../_providers';
 import { useMobileDetection } from '@/src/hooks';
 import { UserAvatar } from '@/src/components';
 import type { User } from '../../_providers/AdminApiProvider';
-import type { UserListProps } from './UserList.types';
+import type { UserListProps, UserListFilters } from './UserList.types';
 import { FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 
-export function UserList({ className = '' }: UserListProps) {
+export function UserList({ 
+  className = '', 
+  initialFilters = {},
+  onFilterChange 
+}: UserListProps) {
   const { users, fetchUsers, deleteUser, isLoading } = useAdminApi();
   const { isMobile } = useMobileDetection();
   
-  const [search, setSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const defaultLimit = 20;
+  const [search, setSearch] = useState(initialFilters.search || '');
+  const [currentPage, setCurrentPage] = useState(initialFilters.page || 1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<User | null>(null);
   
-  const limit = 20;
+  const limit = initialFilters.limit || defaultLimit;
+
+  // Notify parent of filter changes
+  const notifyFilterChange = (newFilters: Partial<UserListFilters>) => {
+    const filters: UserListFilters = {
+      search,
+      page: currentPage,
+      limit,
+      ...newFilters,
+    };
+    onFilterChange?.(filters);
+  };
 
   // Fetch users on mount (provider checks staleness)
   useEffect(() => {
@@ -25,17 +41,28 @@ export function UserList({ className = '' }: UserListProps) {
 
   // Fetch when page changes
   useEffect(() => {
+    notifyFilterChange({ page: currentPage });
     fetchUsers({ page: currentPage, limit, search });
   }, [currentPage]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(1); // Reset to first page on search
-    fetchUsers({ page: 1, limit, search });
+    const newPage = 1;
+    setCurrentPage(newPage);
+    notifyFilterChange({ search, page: newPage });
+    fetchUsers({ page: newPage, limit, search });
+  };
+
+  const handleClearSearch = () => {
+    setSearch('');
+    const newPage = 1;
+    setCurrentPage(newPage);
+    notifyFilterChange({ search: '', page: newPage });
+    fetchUsers({ page: newPage, limit, search: '' });
   };
 
   const handleEdit = (user: User) => {
-    // TODO: Navigate to edit page
+    // TODO: Navigate to edit page or open modal
     console.log('Edit user:', user.id);
   };
 
@@ -82,9 +109,19 @@ export function UserList({ className = '' }: UserListProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search users by name or email..."
-            className="w-full px-4 py-3 pl-12 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 pl-12 pr-28 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <button
+            type="button"
+            onClick={handleClearSearch}
+            className={`absolute right-24 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors ${
+              search ? 'visible' : 'invisible'
+            }`}
+            aria-label="Clear search"
+          >
+            ✕
+          </button>
           <button
             type="submit"
             className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors"

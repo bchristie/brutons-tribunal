@@ -1,8 +1,36 @@
 'use client';
 
+import { Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { UserList } from '../../_components';
+import type { UserListFilters } from '../../_components/UserList/UserList.types';
 
-export default function UsersPage() {
+function UsersPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const initialFilters = {
+    search: searchParams.get('search') || '',
+    page: parseInt(searchParams.get('page') || '1'),
+    limit: 20,
+  };
+
+  const handleFilterChange = (filters: UserListFilters) => {
+    const params = new URLSearchParams();
+    
+    if (filters.search) {
+      params.set('search', filters.search);
+    }
+    
+    if (filters.page > 1) {
+      params.set('page', filters.page.toString());
+    }
+    
+    // Update URL
+    const queryString = params.toString();
+    router.push(queryString ? `?${queryString}` : '/admin/users');
+  };
+
   return (
     <div className="p-4 md:p-8">
       <div className="mb-6">
@@ -14,7 +42,24 @@ export default function UsersPage() {
         </p>
       </div>
       
-      <UserList />
+      <UserList 
+        initialFilters={initialFilters}
+        onFilterChange={handleFilterChange}
+      />
     </div>
+  );
+}
+
+export default function UsersPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-4 md:p-8">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    }>
+      <UsersPageContent />
+    </Suspense>
   );
 }
