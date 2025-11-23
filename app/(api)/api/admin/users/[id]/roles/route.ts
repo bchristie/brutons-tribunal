@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const currentUser = await getCurrentUser();
@@ -34,7 +34,7 @@ export async function POST(
       );
     }
 
-    const userId = params.id;
+    const { id: userId } = await params;
     const body = await request.json();
     const { roleId, roleName } = body;
 
@@ -145,7 +145,7 @@ export async function POST(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const currentUser = await getCurrentUser();
@@ -167,7 +167,7 @@ export async function DELETE(
       );
     }
 
-    const userId = params.id;
+    const { id: userId } = await params;
     const { searchParams } = new URL(request.url);
     const roleId = searchParams.get('roleId');
     const roleName = searchParams.get('roleName');

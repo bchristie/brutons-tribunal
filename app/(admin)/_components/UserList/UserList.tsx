@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAdminApi } from '../../_providers';
 import { useMobileDetection } from '@/src/hooks';
 import { UserAvatar } from '@/src/components';
@@ -13,6 +14,7 @@ export function UserList({
   initialFilters = {},
   onFilterChange 
 }: UserListProps) {
+  const router = useRouter();
   const { users, fetchUsers, deleteUser, isLoading } = useAdminApi();
   const { isMobile } = useMobileDetection();
   
@@ -62,8 +64,7 @@ export function UserList({
   };
 
   const handleEdit = (user: User) => {
-    // TODO: Navigate to edit page or open modal
-    console.log('Edit user:', user.id);
+    router.push(`/admin/users/${user.id}`);
   };
 
   const handleDeleteClick = (user: User) => {

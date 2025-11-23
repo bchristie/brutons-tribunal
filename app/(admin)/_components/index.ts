@@ -4,3 +4,4 @@ export * from './DashboardStats';
 export * from './RecentActivity';
 export * from './LoadingSpinner';
 export * from './UserList';
+export * from './UserDetail';

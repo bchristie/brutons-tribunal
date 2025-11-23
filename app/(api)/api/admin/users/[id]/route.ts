@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const currentUser = await getCurrentUser();
@@ -24,7 +24,7 @@ export async function GET(
       );
     }
 
-    const userId = params.id;
+    const { id: userId } = await params;
     const isAdmin = await permissionRepository.hasRole(currentUser.id, Roles.ADMIN);
     const isSelf = currentUser.id === userId;
 
@@ -94,7 +94,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const currentUser = await getCurrentUser();
@@ -106,7 +106,7 @@ export async function PATCH(
       );
     }
 
-    const userId = params.id;
+    const { id: userId } = await params;
     const isAdmin = await permissionRepository.hasRole(currentUser.id, Roles.ADMIN);
     const isSelf = currentUser.id === userId;
 
@@ -214,7 +214,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const currentUser = await getCurrentUser();
@@ -226,7 +226,7 @@ export async function DELETE(
       );
     }
 
-    const userId = params.id;
+    const { id: userId } = await params;
     const isAdmin = await permissionRepository.hasRole(currentUser.id, Roles.ADMIN);
 
     // Must be admin (users cannot delete themselves)
