@@ -2,6 +2,7 @@
   "name": "Brutons Tribunal",
   "short_name": "Brutons Tribunal",
   "description": "Progressive Web App for Brutons Tribunal",
+  "version": "1.0.0",
   "start_url": "/pwa",
   "display": "standalone",
   "background_color": "#dbeafe",

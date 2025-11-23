@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
-    "build": "next build",
+    "build": "node scripts/generate-pwa-version.js && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "vercel-build": "node scripts/wait-for-db.js && npx prisma migrate deploy && npx prisma db seed && next build"
+    "vercel-build": "node scripts/wait-for-db.js && npx prisma migrate deploy && npx prisma db seed && node scripts/generate-pwa-version.js && next build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

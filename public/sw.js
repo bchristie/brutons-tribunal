@@ -1,9 +1,13 @@
-// Service Worker for Brutons Tribunal Mobile PWA
-const CACHE_NAME = 'bt-mobile-v1';
-const DATA_CACHE_NAME = 'bt-mobile-data-v1';
+// Service Worker for Brutons Tribunal PWA
+const CACHE_NAME = 'bt-pwa-v1';
+const DATA_CACHE_NAME = 'bt-pwa-data-v1';
 
 // Static resources to cache
 const urlsToCache = [
+  '/pwa',
+  '/manifest.json',
+  '/_next/static/css/app/globals.css'
+];
   '/mobile',
   '/mobile/manifest.json',
   '/_next/static/css/app/globals.css'
@@ -36,8 +40,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Only handle mobile page requests for static caching
-  if (!requestUrl.pathname.startsWith('/mobile')) {
+  // Only handle PWA page requests for static caching
+  if (!requestUrl.pathname.startsWith('/pwa')) {
     return;
   }
 
