@@ -10,3 +10,9 @@ export interface UserFormData {
   email: string;
   image: string;
 }
+
+export interface RoleChange {
+  roleId: string;
+  roleName: string;
+  action: 'add' | 'remove';
+}

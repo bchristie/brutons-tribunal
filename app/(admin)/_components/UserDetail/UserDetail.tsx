@@ -3,15 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminApi } from '../../_providers';
+import { useNotifications } from '../../_providers';
 import { useMobileDetection } from '@/src/hooks';
 import { UserAvatar } from '@/src/components';
 import type { User } from '../../_providers/AdminApiProvider';
-import type { UserDetailProps, UserFormData } from './UserDetail.types';
-import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
+import type { UserDetailProps, UserFormData, RoleChange } from './UserDetail.types';
+import { FaArrowLeft, FaSave, FaTimes, FaPlus } from 'react-icons/fa';
 
 export function UserDetail({ userId, className = '' }: UserDetailProps) {
   const router = useRouter();
-  const { fetchUser, updateUser, isLoading, error } = useAdminApi();
+  const { fetchUser, updateUser, assignRoleToUser, removeRoleFromUser, roles, fetchRoles, isLoading, error } = useAdminApi();
+  const { success, error: showError } = useNotifications();
   const { isMobile } = useMobileDetection();
   
   const [user, setUser] = useState<User | null>(null);
@@ -20,12 +22,14 @@ export function UserDetail({ userId, className = '' }: UserDetailProps) {
     email: '',
     image: '',
   });
+  const [roleChanges, setRoleChanges] = useState<RoleChange[]>([]);
+  const [selectedRoleId, setSelectedRoleId] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch user on mount
+  // Fetch user and roles on mount
   useEffect(() => {
-    const loadUser = async () => {
+    const loadData = async () => {
       try {
         const userData = await fetchUser(userId);
         setUser(userData);
@@ -34,12 +38,16 @@ export function UserDetail({ userId, className = '' }: UserDetailProps) {
           email: userData.email || '',
           image: userData.image || '',
         });
+        
+        // Fetch available roles
+        await fetchRoles();
       } catch (error) {
+        showError('Failed to load user data');
         console.error('Failed to load user:', error);
       }
     };
     
-    loadUser();
+    loadData();
   }, [userId]);
 
   const handleBack = () => {
@@ -58,7 +66,50 @@ export function UserDetail({ userId, className = '' }: UserDetailProps) {
         image: user.image || '',
       });
     }
+    setRoleChanges([]);
+    setSelectedRoleId('');
     setIsEditing(false);
+  };
+
+  const handleAddRole = () => {
+    if (!selectedRoleId) return;
+    
+    const role = availableRoles.find(r => r.id === selectedRoleId);
+    if (!role) return;
+
+    // Check if already scheduled for removal, if so just cancel that
+    const removeIndex = roleChanges.findIndex(
+      c => c.roleId === selectedRoleId && c.action === 'remove'
+    );
+    
+    if (removeIndex !== -1) {
+      setRoleChanges(roleChanges.filter((_, i) => i !== removeIndex));
+    } else {
+      // Add new role change
+      setRoleChanges([
+        ...roleChanges,
+        { roleId: role.id, roleName: role.name, action: 'add' }
+      ]);
+    }
+    
+    setSelectedRoleId('');
+  };
+
+  const handleRemoveRole = (roleId: string, roleName: string) => {
+    // Check if this role was scheduled to be added, if so just cancel that
+    const addIndex = roleChanges.findIndex(
+      c => c.roleId === roleId && c.action === 'add'
+    );
+    
+    if (addIndex !== -1) {
+      setRoleChanges(roleChanges.filter((_, i) => i !== addIndex));
+    } else {
+      // Schedule for removal
+      setRoleChanges([
+        ...roleChanges,
+        { roleId, roleName, action: 'remove' }
+      ]);
+    }
   };
 
   const handleSave = async () => {
@@ -66,23 +117,76 @@ export function UserDetail({ userId, className = '' }: UserDetailProps) {
 
     setIsSaving(true);
     try {
+      // Update user profile
       const updatedUser = await updateUser(userId, {
         name: formData.name,
         image: formData.image,
         updatedAt: user.updatedAt,
       });
-      setUser(updatedUser);
+
+      // Apply role changes
+      for (const change of roleChanges) {
+        if (change.action === 'add') {
+          await assignRoleToUser(userId, { roleId: change.roleId });
+        } else {
+          await removeRoleFromUser(userId, { roleId: change.roleId });
+        }
+      }
+
+      // Refresh user data to get updated roles
+      const refreshedUser = await fetchUser(userId);
+      setUser(refreshedUser);
       setFormData({
-        name: updatedUser.name || '',
-        email: updatedUser.email || '',
-        image: updatedUser.image || '',
+        name: refreshedUser.name || '',
+        email: refreshedUser.email || '',
+        image: refreshedUser.image || '',
       });
+      setRoleChanges([]);
       setIsEditing(false);
-    } catch (error) {
+      
+      success('User updated successfully');
+    } catch (error: any) {
+      showError(error?.message || 'Failed to update user');
       console.error('Failed to update user:', error);
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Calculate effective roles (current + pending changes)
+  const getEffectiveRoles = () => {
+    if (!user) return [];
+    
+    let effectiveRoles = [...user.roles];
+    
+    roleChanges.forEach(change => {
+      if (change.action === 'add') {
+        // Add if not already present
+        if (!effectiveRoles.find(r => r.id === change.roleId)) {
+          effectiveRoles.push({ id: change.roleId, name: change.roleName });
+        }
+      } else {
+        // Remove
+        effectiveRoles = effectiveRoles.filter(r => r.id !== change.roleId);
+      }
+    });
+    
+    return effectiveRoles;
+  };
+
+  // Get available roles for the dropdown (exclude already assigned)
+  const availableRoles = (roles || []).filter(role => {
+    const effectiveRoles = getEffectiveRoles();
+    return !effectiveRoles.find(r => r.id === role.id);
+  });
+
+  // Check if a role is pending add/remove
+  const getRoleStatus = (roleId: string): 'current' | 'pending-add' | 'pending-remove' => {
+    const change = roleChanges.find(c => c.roleId === roleId);
+    if (change) {
+      return change.action === 'add' ? 'pending-add' : 'pending-remove';
+    }
+    return 'current';
   };
 
   if (isLoading && !user) {
@@ -208,19 +312,65 @@ export function UserDetail({ userId, className = '' }: UserDetailProps) {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Roles
                 </label>
-                <div className="flex flex-wrap gap-2">
-                  {user.roles.map((role: { id: string; name: string }) => (
-                    <span
-                      key={role.id}
-                      className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full"
-                    >
-                      {role.name}
-                    </span>
-                  ))}
-                  {user.roles.length === 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {getEffectiveRoles().map((role: { id: string; name: string }) => {
+                    const status = getRoleStatus(role.id);
+                    return (
+                      <span
+                        key={role.id}
+                        className={`inline-flex items-center gap-2 px-3 py-1 text-sm rounded-full ${
+                          status === 'pending-add'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-700'
+                            : status === 'pending-remove'
+                            ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-700 line-through'
+                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                        }`}
+                      >
+                        {role.name}
+                        {isEditing && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveRole(role.id, role.name)}
+                            disabled={isSaving}
+                            className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </span>
+                    );
+                  })}
+                  {getEffectiveRoles().length === 0 && (
                     <span className="text-gray-500 dark:text-gray-400 text-sm">No roles assigned</span>
                   )}
                 </div>
+                
+                {isEditing && availableRoles.length > 0 && (
+                  <div className="flex gap-2">
+                    <select
+                      value={selectedRoleId}
+                      onChange={(e) => setSelectedRoleId(e.target.value)}
+                      disabled={isSaving}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select a role to add...</option>
+                      {availableRoles.map(role => (
+                        <option key={role.id} value={role.id}>
+                          {role.name}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={handleAddRole}
+                      disabled={!selectedRoleId || isSaving}
+                      className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors"
+                    >
+                      <FaPlus />
+                      Add
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -312,19 +462,65 @@ export function UserDetail({ userId, className = '' }: UserDetailProps) {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Roles
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {user.roles.map((role: { id: string; name: string }) => (
-                      <span
-                        key={role.id}
-                        className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full"
-                      >
-                        {role.name}
-                      </span>
-                    ))}
-                    {user.roles.length === 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {getEffectiveRoles().map((role: { id: string; name: string }) => {
+                      const status = getRoleStatus(role.id);
+                      return (
+                        <span
+                          key={role.id}
+                          className={`inline-flex items-center gap-2 px-3 py-1 text-sm rounded-full ${
+                            status === 'pending-add'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-700'
+                              : status === 'pending-remove'
+                              ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-700 line-through'
+                              : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                          }`}
+                        >
+                          {role.name}
+                          {isEditing && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveRole(role.id, role.name)}
+                              disabled={isSaving}
+                              className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </span>
+                      );
+                    })}
+                    {getEffectiveRoles().length === 0 && (
                       <span className="text-gray-500 dark:text-gray-400 text-sm">No roles assigned</span>
                     )}
                   </div>
+                  
+                  {isEditing && availableRoles.length > 0 && (
+                    <div className="flex gap-2">
+                      <select
+                        value={selectedRoleId}
+                        onChange={(e) => setSelectedRoleId(e.target.value)}
+                        disabled={isSaving}
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="">Select a role to add...</option>
+                        {availableRoles.map(role => (
+                          <option key={role.id} value={role.id}>
+                            {role.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={handleAddRole}
+                        disabled={!selectedRoleId || isSaving}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors"
+                      >
+                        <FaPlus />
+                        Add
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Action Buttons */}

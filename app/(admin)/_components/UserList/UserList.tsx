@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminApi } from '../../_providers';
+import { useNotifications } from '../../_providers';
 import { useMobileDetection } from '@/src/hooks';
 import { UserAvatar } from '@/src/components';
 import type { User } from '../../_providers/AdminApiProvider';
@@ -16,6 +17,7 @@ export function UserList({
 }: UserListProps) {
   const router = useRouter();
   const { users, fetchUsers, deleteUser, isLoading } = useAdminApi();
+  const { success, error: showError } = useNotifications();
   const { isMobile } = useMobileDetection();
   
   const defaultLimit = 20;
@@ -77,11 +79,13 @@ export function UserList({
     try {
       await deleteUser(showDeleteConfirm.id, showDeleteConfirm.updatedAt);
       setShowDeleteConfirm(null);
+      success('User deleted successfully');
       // Refetch current page (provider will detect params are the same and won't cache)
       fetchUsers({ page: currentPage, limit, search });
-    } catch (error) {
+    } catch (error: any) {
+      showError(error?.message || 'Failed to delete user');
       console.error('Failed to delete user:', error);
-      // Error is already set in provider
+      setShowDeleteConfirm(null);
     }
   };
 
