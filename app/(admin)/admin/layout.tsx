@@ -8,6 +8,7 @@ import { AdminApiProvider, NotificationProvider } from '../_providers';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Metadata, Viewport } from 'next';
 import "../../globals.css";
+import { FloatingActions } from '@/app/(admin)/_components';
 
 // Force dynamic rendering since we have user-based layouts and widgets
 export const dynamic = 'force-dynamic';
@@ -70,6 +71,7 @@ export default async function AdminLayout({
               <NotificationProvider>
                 <AdminShell>
                   {children}
+                  <FloatingActions />
                 </AdminShell>
               </NotificationProvider>
             </AdminApiProvider>

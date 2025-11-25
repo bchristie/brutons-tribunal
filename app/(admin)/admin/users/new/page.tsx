@@ -1,26 +1,18 @@
 import { UserDetail, Breadcrumb } from '../../../_components';
 
-interface UserDetailPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
-
-export default async function UserDetailPage({ params }: UserDetailPageProps) {
-  const { id } = await params;
-
+export default function NewUserPage() {
   return (
     <div className="p-4 md:p-8">
       <Breadcrumb
         items={[
           { label: 'Admin', href: '/admin' },
           { label: 'Users', href: '/admin/users' },
-          { label: 'User Details' },
+          { label: 'New User' },
         ]}
-        mobileTitle="Edit User"
+        mobileTitle="Create User"
         className="mb-6"
       />
-      <UserDetail userId={id} />
+      <UserDetail />
     </div>
   );
 }

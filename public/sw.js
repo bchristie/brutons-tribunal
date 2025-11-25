@@ -8,10 +8,6 @@ const urlsToCache = [
   '/manifest.json',
   '/_next/static/css/app/globals.css'
 ];
-  '/mobile',
-  '/mobile/manifest.json',
-  '/_next/static/css/app/globals.css'
-];
 
 // Critical data endpoints to cache
 const criticalApiEndpoints = [

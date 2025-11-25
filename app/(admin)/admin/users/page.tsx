@@ -2,8 +2,9 @@
 
 import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { UserList } from '../../_components';
+import { UserList, Breadcrumb } from '../../_components';
 import type { UserListFilters } from '../../_components/UserList/UserList.types';
+import { FaPlus } from 'react-icons/fa';
 
 function UsersPageContent() {
   const router = useRouter();
@@ -31,12 +32,31 @@ function UsersPageContent() {
     router.push(queryString ? `?${queryString}` : '/admin/users');
   };
 
+  const handleCreateUser = () => {
+    router.push('/admin/users/new');
+  };
+
   return (
     <div className="p-4 md:p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          User Management
-        </h1>
+      <div className="flex items-center justify-between mb-6">
+        <Breadcrumb
+          items={[
+            { label: 'Admin', href: '/admin' },
+            { label: 'User Management' },
+          ]}
+          mobileTitle="Users"
+        />
+        <button
+          onClick={handleCreateUser}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+        >
+          <FaPlus />
+          <span className="hidden sm:inline">Create User</span>
+          <span className="sm:hidden">New</span>
+        </button>
+      </div>
+      
+      <div className="mb-6 hidden md:block">
         <p className="text-gray-600 dark:text-gray-400">
           Manage user accounts and permissions
         </p>
