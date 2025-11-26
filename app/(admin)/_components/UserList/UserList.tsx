@@ -212,7 +212,11 @@ export function UserList({
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {usersList.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr 
+                  key={user.id} 
+                  onClick={() => handleEdit(user)}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <UserAvatar
@@ -253,14 +257,20 @@ export function UserList({
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end gap-2">
                       <button
-                        onClick={() => handleEdit(user)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(user);
+                        }}
                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
                       >
                         <FaEdit />
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDeleteClick(user)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(user);
+                        }}
                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
                       >
                         <FaTrash />

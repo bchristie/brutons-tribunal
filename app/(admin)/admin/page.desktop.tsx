@@ -1,7 +1,7 @@
 'use client';
 
-import { useAuth } from '@/src/providers/AuthProvider';
-import { useAdminApi } from '../_providers/AdminApiProvider';
+import { useAuth } from '@/src/providers';
+import { useAdminApi } from '../_providers';
 import { 
   DashboardWelcome, 
   DashboardGrid, 
