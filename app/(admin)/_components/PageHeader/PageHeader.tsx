@@ -38,7 +38,7 @@ export function PageHeader() {
     <div className="mb-6">
       {/* Breadcrumbs & Actions Row */}
       {(config.breadcrumbs || config.actions) && (
-        <div className="flex items-center justify-between mb-4">
+        <div className={`flex items-center justify-between ${isMobile ? "mb-0" : "mb-4"}`}>
           {config.breadcrumbs && (
             <Breadcrumb
               items={config.breadcrumbs}
@@ -55,9 +55,9 @@ export function PageHeader() {
         </div>
       )}
 
-      {/* Title & Subtitle (Desktop only when breadcrumbs exist) */}
-      {!isMobile && config.breadcrumbs && config.subtitle && (
-        <div className="mb-6">
+      {/* Title & Subtitle (when breadcrumbs exist) */}
+      {config.breadcrumbs && config.subtitle && (
+        <div className={isMobile ? "mb-0" : "mb-6"}>
           <p className="text-gray-600 dark:text-gray-400">{config.subtitle}</p>
         </div>
       )}
