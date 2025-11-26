@@ -3,6 +3,7 @@ import type { User } from '../../_providers/AdminApiProvider';
 export interface UserDetailProps {
   userId?: string; // Optional - if not provided, create mode
   className?: string;
+  returnUrl?: string; // Optional - URL to return to after save/delete/cancel
 }
 
 export interface UserFormData {

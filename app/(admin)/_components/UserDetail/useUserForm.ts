@@ -4,15 +4,19 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminApi } from '../../_providers';
 import { useNotifications } from '../../_providers';
+import { useAuth } from '@/src/providers/auth';
 import type { User } from '../../_providers/AdminApiProvider';
 import type { UserFormData, RoleChange, UserFormState } from './UserDetail.types';
 
-export function useUserForm(userId?: string) {
+export function useUserForm(userId?: string, returnUrl?: string) {
   const router = useRouter();
-  const { fetchUser, updateUser, createUser, assignRoleToUser, removeRoleFromUser, roles, fetchRoles, isLoading, error } = useAdminApi();
+  const { fetchUser, updateUser, createUser, deleteUser, assignRoleToUser, removeRoleFromUser, roles, fetchRoles, isLoading, error } = useAdminApi();
   const { success, error: showError } = useNotifications();
+  const { user: currentUser } = useAuth();
   
   const isCreateMode = !userId;
+  const isSelf = currentUser?.id === userId;
+  const defaultReturnUrl = '/admin/users';
   
   const [user, setUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<UserFormData>({
@@ -139,7 +143,7 @@ export function useUserForm(userId?: string) {
         }
         
         success('User created successfully');
-        router.push('/admin/users');
+        router.push(returnUrl || defaultReturnUrl);
       } else {
         // Update existing user
         if (!user) throw new Error('User not found');
@@ -184,7 +188,7 @@ export function useUserForm(userId?: string) {
 
   const handleCancel = () => {
     if (isCreateMode) {
-      router.push('/admin/users');
+      router.push(returnUrl || defaultReturnUrl);
     } else {
       setFormData(initialFormData);
       setRoleChanges([]);
@@ -214,6 +218,24 @@ export function useUserForm(userId?: string) {
     return roleChanges.some(c => c.roleId === roleId);
   };
 
+  const handleDelete = async () => {
+    if (!user || !userId) return;
+    
+    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await deleteUser(userId, user.updatedAt);
+      success('User deleted successfully');
+      router.push(returnUrl || defaultReturnUrl);
+    } catch (error: any) {
+      showError(error?.message || 'Failed to delete user');
+      setIsSaving(false);
+    }
+  };
+
   return {
     user,
     formData,
@@ -223,11 +245,13 @@ export function useUserForm(userId?: string) {
     error,
     isDirty: isDirty(),
     isCreateMode,
+    isSelf,
     roles,
     handleFieldChange,
     handleToggleRole,
     handleSave,
     handleCancel,
+    handleDelete,
     hasRole,
     isPending,
   };

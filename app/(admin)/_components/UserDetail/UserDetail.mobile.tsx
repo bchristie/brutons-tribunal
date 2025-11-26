@@ -7,7 +7,7 @@ import { FaSave, FaTimes } from 'react-icons/fa';
 import { useUserForm } from './useUserForm';
 import type { UserDetailProps } from './UserDetail.types';
 
-export function UserDetailMobile({ userId, className = '' }: UserDetailProps) {
+export function UserDetailMobile({ userId, returnUrl, className = '' }: UserDetailProps) {
   const {
     user,
     formData,
@@ -16,14 +16,16 @@ export function UserDetailMobile({ userId, className = '' }: UserDetailProps) {
     error,
     isDirty,
     isCreateMode,
+    isSelf,
     roles,
     handleFieldChange,
     handleToggleRole,
     handleSave,
     handleCancel,
+    handleDelete,
     hasRole,
     isPending,
-  } = useUserForm(userId);
+  } = useUserForm(userId, returnUrl);
 
   if (isLoading && !user && !isCreateMode) {
     return <LoadingSpinner size="md" message="Loading user..." />;
@@ -144,23 +146,34 @@ export function UserDetailMobile({ userId, className = '' }: UserDetailProps) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 mt-6">
-            <button
-              onClick={handleSave}
-              disabled={isSaving || !isDirty}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
-            >
-              <FaSave />
-              {isSaving ? 'Saving...' : isCreateMode ? 'Create' : 'Save'}
-            </button>
-            <button
-              onClick={handleCancel}
-              disabled={isSaving}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors disabled:opacity-50"
-            >
-              <FaTimes />
-              Cancel
-            </button>
+          <div className="space-y-3 mt-6">
+            <div className="flex gap-3">
+              <button
+                onClick={handleSave}
+                disabled={isSaving || !isDirty}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+              >
+                <FaSave />
+                {isSaving ? 'Saving...' : isCreateMode ? 'Create' : 'Save'}
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={isSaving}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors disabled:opacity-50"
+              >
+                <FaTimes />
+                Cancel
+              </button>
+            </div>
+            {!isCreateMode && !isSelf && (
+              <button
+                onClick={handleDelete}
+                disabled={isSaving}
+                className="w-full py-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors disabled:opacity-50"
+              >
+                Delete User
+              </button>
+            )}
           </div>
         </div>
       </div>

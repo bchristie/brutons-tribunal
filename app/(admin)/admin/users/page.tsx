@@ -33,7 +33,13 @@ function UsersPageContent() {
   };
 
   const handleCreateUser = () => {
-    router.push('/admin/users/new');
+    // Build current URL with filters to use as return URL
+    const params = new URLSearchParams();
+    if (initialFilters.search) params.set('search', initialFilters.search);
+    if (initialFilters.page && initialFilters.page > 1) params.set('page', initialFilters.page.toString());
+    const returnUrl = `/admin/users${params.toString() ? `?${params.toString()}` : ''}`;
+    
+    router.push(`/admin/users/new?returnUrl=${encodeURIComponent(returnUrl)}`);
   };
 
   return (

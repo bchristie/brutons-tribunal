@@ -66,7 +66,13 @@ export function UserList({
   };
 
   const handleEdit = (user: User) => {
-    router.push(`/admin/users/${user.id}`);
+    // Build current URL with filters to use as return URL
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    const returnUrl = `/admin/users${params.toString() ? `?${params.toString()}` : ''}`;
+    
+    router.push(`/admin/users/${user.id}?returnUrl=${encodeURIComponent(returnUrl)}`);
   };
 
   const handleDeleteClick = (user: User) => {
