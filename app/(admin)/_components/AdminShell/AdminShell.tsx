@@ -8,6 +8,7 @@ import { UserAvatar } from '@/src/components';
 import { usePathname } from 'next/navigation';
 import { AdminShellProps } from './AdminShell.types';
 import { useState, useRef, useEffect } from 'react';
+import { PageHeader } from '../PageHeader';
 
 /**
  * AdminShell Component
@@ -108,7 +109,10 @@ export function AdminShell({ children }: AdminShellProps) {
 
         {/* Mobile Content */}
         <main className="flex-1 overflow-auto">
-          {children}
+          <div className="p-4">
+            <PageHeader />
+            {children}
+          </div>
         </main>
 
         {/* Mobile Bottom Nav */}
@@ -189,7 +193,10 @@ export function AdminShell({ children }: AdminShellProps) {
 
       {/* Desktop Content */}
       <main className="flex-1 overflow-auto">
-        {children}
+        <div className="p-8">
+          <PageHeader />
+          {children}
+        </div>
       </main>
     </div>
   );

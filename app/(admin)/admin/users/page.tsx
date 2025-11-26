@@ -2,8 +2,9 @@
 
 import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { UserList, Breadcrumb } from '../../_components';
+import { UserList, PageHeaderContent } from '../../_components';
 import type { UserListFilters } from '../../_components/UserList/UserList.types';
+import type { PageHeaderConfig } from '../../_providers/PageHeaderProvider';
 import { FaPlus } from 'react-icons/fa';
 
 function UsersPageContent() {
@@ -27,13 +28,11 @@ function UsersPageContent() {
       params.set('page', filters.page.toString());
     }
     
-    // Update URL
     const queryString = params.toString();
     router.push(queryString ? `?${queryString}` : '/admin/users');
   };
 
   const handleCreateUser = () => {
-    // Build current URL with filters to use as return URL
     const params = new URLSearchParams();
     if (initialFilters.search) params.set('search', initialFilters.search);
     if (initialFilters.page && initialFilters.page > 1) params.set('page', initialFilters.page.toString());
@@ -42,47 +41,40 @@ function UsersPageContent() {
     router.push(`/admin/users/new?returnUrl=${encodeURIComponent(returnUrl)}`);
   };
 
+  const pageHeaderConfig: PageHeaderConfig = {
+    title: 'User Management',
+    subtitle: 'Manage user accounts and permissions',
+    breadcrumbs: [
+      { label: 'Admin', href: '/admin' },
+      { label: 'User Management' },
+    ],
+    mobileTitle: 'Users',
+    actions: [
+      {
+        label: 'Create User',
+        mobileLabel: 'New',
+        onClick: handleCreateUser,
+        icon: <FaPlus />,
+        variant: 'primary',
+      },
+    ],
+  };
+
   return (
-    <div className="p-4 md:p-8">
-      <div className="flex items-center justify-between mb-6">
-        <Breadcrumb
-          items={[
-            { label: 'Admin', href: '/admin' },
-            { label: 'User Management' },
-          ]}
-          mobileTitle="Users"
-        />
-        <button
-          onClick={handleCreateUser}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-        >
-          <FaPlus />
-          <span className="hidden sm:inline">Create User</span>
-          <span className="sm:hidden">New</span>
-        </button>
-      </div>
-      
-      <div className="mb-6 hidden md:block">
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage user accounts and permissions
-        </p>
-      </div>
-      
+    <PageHeaderContent config={pageHeaderConfig}>
       <UserList 
         initialFilters={initialFilters}
         onFilterChange={handleFilterChange}
       />
-    </div>
+    </PageHeaderContent>
   );
 }
 
 export default function UsersPage() {
   return (
     <Suspense fallback={
-      <div className="p-4 md:p-8">
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     }>
       <UsersPageContent />

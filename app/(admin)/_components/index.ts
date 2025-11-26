@@ -8,3 +8,4 @@ export * from './ErrorMessage';
 export * from './UserList';
 export * from './UserDetail';
 export * from './Breadcrumb';
+export * from './PageHeaderContent';

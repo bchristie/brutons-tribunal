@@ -1,5 +1,6 @@
 import { use } from 'react';
-import { UserDetail, Breadcrumb } from '../../../_components';
+import { UserDetail, PageHeaderContent } from '../../../_components';
+import type { PageHeaderConfig } from '../../../_providers/PageHeaderProvider';
 
 interface UserDetailPageProps {
   params: Promise<{
@@ -12,23 +13,24 @@ export default function UserDetailPage({ params, searchParams }: UserDetailPageP
   const { id } = use(params);
   const search = use(searchParams);
   
-  // Build return URL with original search params
   const returnUrl = search.returnUrl 
     ? decodeURIComponent(search.returnUrl as string)
     : '/admin/users';
 
+  const pageHeaderConfig: PageHeaderConfig = {
+    title: 'User Details',
+    subtitle: 'View and edit user information',
+    breadcrumbs: [
+      { label: 'Admin', href: '/admin' },
+      { label: 'Users', href: returnUrl },
+      { label: 'User Details' },
+    ],
+    mobileTitle: 'Edit User',
+  };
+
   return (
-    <div className="p-4 md:p-8">
-      <Breadcrumb
-        items={[
-          { label: 'Admin', href: '/admin' },
-          { label: 'Users', href: returnUrl },
-          { label: 'User Details' },
-        ]}
-        mobileTitle="Edit User"
-        className="mb-6"
-      />
+    <PageHeaderContent config={pageHeaderConfig}>
       <UserDetail userId={id} returnUrl={returnUrl} />
-    </div>
+    </PageHeaderContent>
   );
 }

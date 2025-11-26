@@ -4,7 +4,7 @@ import { getCurrentSession, getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
 import { AuthProvider } from '@/src/providers/AuthProvider/AuthProviderWrapper';
 import { AdminShell } from '../_components';
-import { AdminApiProvider, NotificationProvider } from '../_providers';
+import { AdminApiProvider, NotificationProvider, PageHeaderProvider } from '../_providers';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Metadata, Viewport } from 'next';
 import "../../globals.css";
@@ -69,10 +69,12 @@ export default async function AdminLayout({
           <AuthProvider initialUser={user} initialSession={session}>
             <AdminApiProvider>
               <NotificationProvider>
-                <AdminShell>
-                  {children}
-                  <FloatingActions />
-                </AdminShell>
+                <PageHeaderProvider>
+                  <AdminShell>
+                    {children}
+                    <FloatingActions />
+                  </AdminShell>
+                </PageHeaderProvider>
               </NotificationProvider>
             </AdminApiProvider>
           </AuthProvider>
