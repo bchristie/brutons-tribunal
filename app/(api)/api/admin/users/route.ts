@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
 import { prisma, permissionRepository, userRepository } from '@/src/lib/prisma';
+import { isValidUSPhoneNumber, normalizePhoneNumber } from '@/src/lib/utils/phone';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,6 +79,7 @@ export async function GET(request: NextRequest) {
       email: user.email,
       name: user.name,
       image: user.image,
+      phone: user.phone,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       roles: user.userRoles.map((ur: any) => ({
@@ -132,7 +134,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, name, image } = body;
+    const { email, name, image, phone } = body;
 
     // Validate required fields
     if (!email) {
@@ -140,6 +142,18 @@ export async function POST(request: NextRequest) {
         { error: 'Email is required' },
         { status: 400 }
       );
+    }
+
+    // Validate and normalize phone if provided (US format)
+    let normalizedPhone: string | null = null;
+    if (phone) {
+      if (!isValidUSPhoneNumber(phone)) {
+        return NextResponse.json(
+          { error: 'Invalid phone number format. Please use a valid US phone number.' },
+          { status: 400 }
+        );
+      }
+      normalizedPhone = normalizePhoneNumber(phone);
     }
 
     // Check if email already exists
@@ -157,6 +171,7 @@ export async function POST(request: NextRequest) {
         email,
         name: name || null,
         image: image || null,
+        phone: normalizedPhone,
       },
       include: {
         userRoles: {
@@ -178,6 +193,7 @@ export async function POST(request: NextRequest) {
       email: newUser.email,
       name: newUser.name,
       image: newUser.image,
+      phone: newUser.phone,
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt,
       roles: newUser.userRoles.map((ur: any) => ({

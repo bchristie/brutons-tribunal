@@ -10,6 +10,7 @@ export interface UserFormData {
   name: string;
   email: string;
   image: string;
+  phone: string;
 }
 
 export interface RoleChange {

@@ -3,6 +3,7 @@
 import { UserAvatar } from '@/src/components';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { ErrorMessage } from '../ErrorMessage';
+import { formatPhoneNumber } from '@/src/lib/utils/phone';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import { useUserForm } from './useUserForm';
 import type { UserDetailProps } from './UserDetail.types';
@@ -87,6 +88,23 @@ export function UserDetailDesktop({ userId, returnUrl, className = '' }: UserDet
                     </p>
                   )}
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleFieldChange('phone', e.target.value)}
+                  placeholder="(555) 123-4567"
+                  disabled={isSaving}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Optional. US format only.
+                </p>
               </div>
 
               <div>

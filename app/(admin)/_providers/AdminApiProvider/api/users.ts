@@ -13,6 +13,7 @@ export interface User {
   email: string;
   name: string | null;
   image: string | null;
+  phone: string | null;
   createdAt: string;
   updatedAt: string;
   roles: UserRole[];
@@ -38,11 +39,13 @@ export interface CreateUserParams {
   email: string;
   name?: string;
   image?: string;
+  phone?: string;
 }
 
 export interface UpdateUserParams {
   name?: string;
   image?: string;
+  phone?: string;
   updatedAt: string; // Required for concurrency control
 }
 

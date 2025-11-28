@@ -23,6 +23,7 @@ export function useUserForm(userId?: string, returnUrl?: string) {
     name: '',
     email: '',
     image: '',
+    phone: '',
   });
   const [roleChanges, setRoleChanges] = useState<RoleChange[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -32,6 +33,7 @@ export function useUserForm(userId?: string, returnUrl?: string) {
     name: '',
     email: '',
     image: '',
+    phone: '',
   });
   const [initialRoleIds, setInitialRoleIds] = useState<Set<string>>(new Set());
 
@@ -49,6 +51,7 @@ export function useUserForm(userId?: string, returnUrl?: string) {
             name: userData.name || '',
             email: userData.email || '',
             image: userData.image || '',
+            phone: userData.phone || '',
           };
           setFormData(initial);
           setInitialFormData(initial);
@@ -70,13 +73,15 @@ export function useUserForm(userId?: string, returnUrl?: string) {
       return formData.name.trim() !== '' || 
              formData.email.trim() !== '' || 
              formData.image.trim() !== '' ||
+             formData.phone.trim() !== '' ||
              roleChanges.length > 0;
     }
     
     // In edit mode, check if any field changed or roles changed
     const formChanged = formData.name !== initialFormData.name ||
                        formData.email !== initialFormData.email ||
-                       formData.image !== initialFormData.image;
+                       formData.image !== initialFormData.image ||
+                       formData.phone !== initialFormData.phone;
     
     const rolesChanged = roleChanges.length > 0;
     
@@ -133,6 +138,7 @@ export function useUserForm(userId?: string, returnUrl?: string) {
           name: formData.name,
           email: formData.email,
           image: formData.image,
+          phone: formData.phone,
         });
         
         // Apply role changes
@@ -151,6 +157,7 @@ export function useUserForm(userId?: string, returnUrl?: string) {
         const updatedUser = await updateUser(userId!, {
           name: formData.name,
           image: formData.image,
+          phone: formData.phone,
           updatedAt: user.updatedAt,
         });
 
@@ -170,6 +177,7 @@ export function useUserForm(userId?: string, returnUrl?: string) {
           name: refreshedUser.name || '',
           email: refreshedUser.email || '',
           image: refreshedUser.image || '',
+          phone: refreshedUser.phone || '',
         };
         setFormData(newInitial);
         setInitialFormData(newInitial);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
 import { prisma, permissionRepository } from '@/src/lib/prisma';
+import { isValidUSPhoneNumber, normalizePhoneNumber } from '@/src/lib/utils/phone';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,6 +68,7 @@ export async function GET(
       email: user.email,
       name: user.name,
       image: user.image,
+      phone: user.phone,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       roles: user.userRoles.map((ur: any) => ({
@@ -119,7 +121,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { name, image, updatedAt: clientUpdatedAt } = body;
+    const { name, image, phone, updatedAt: clientUpdatedAt } = body;
 
     // Validate concurrency control
     if (!clientUpdatedAt) {
@@ -127,6 +129,21 @@ export async function PATCH(
         { error: 'updatedAt is required for concurrency control' },
         { status: 400 }
       );
+    }
+
+    // Validate and normalize phone if provided (US format)
+    let normalizedPhone: string | null | undefined = undefined;
+    if (phone !== undefined) {
+      if (phone === null || phone === '') {
+        normalizedPhone = null;
+      } else if (!isValidUSPhoneNumber(phone)) {
+        return NextResponse.json(
+          { error: 'Invalid phone number format. Please use a valid US phone number.' },
+          { status: 400 }
+        );
+      } else {
+        normalizedPhone = normalizePhoneNumber(phone);
+      }
     }
 
     // Fetch current user state
@@ -154,6 +171,7 @@ export async function PATCH(
             email: existingUser.email,
             name: existingUser.name,
             image: existingUser.image,
+            phone: existingUser.phone,
             updatedAt: existingUser.updatedAt,
           },
         },
@@ -167,6 +185,7 @@ export async function PATCH(
       data: {
         name: name !== undefined ? name : undefined,
         image: image !== undefined ? image : undefined,
+        phone: normalizedPhone,
       },
       include: {
         userRoles: {
@@ -188,6 +207,7 @@ export async function PATCH(
       email: updatedUser.email,
       name: updatedUser.name,
       image: updatedUser.image,
+      phone: updatedUser.phone,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
       roles: updatedUser.userRoles.map((ur: any) => ({
@@ -281,6 +301,7 @@ export async function DELETE(
             email: existingUser.email,
             name: existingUser.name,
             image: existingUser.image,
+            phone: existingUser.phone,
             updatedAt: existingUser.updatedAt,
           },
         },
