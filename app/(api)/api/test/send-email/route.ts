@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
-import { sendVerificationEmail, sendWelcomeEmail } from '@/src/lib/email';
+import { sendVerificationEmail, sendWelcomeEmail, sendInvitationEmail } from '@/src/lib/email';
+import { buildUrl } from '@/src/lib/utils/url';
 
 /**
  * POST /api/test/send-email
@@ -44,6 +45,15 @@ export async function POST(request: NextRequest) {
         result = await sendWelcomeEmail(
           to || user.email,
           userName || user.name || 'User'
+        );
+        break;
+        
+      case 'invitation':
+        result = await sendInvitationEmail(
+          to || user.email,
+          userName || user.name || 'Admin',
+          buildUrl('/invite/test-token-123'), // Example using URL helper
+          "Bruton's Tribunal"
         );
         break;
         

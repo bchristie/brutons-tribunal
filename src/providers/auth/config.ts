@@ -3,6 +3,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma, userRepository, permissionRepository } from '../../lib/prisma';
 import { Roles } from '../../lib/permissions/permissions';
+import { sendWelcomeEmail } from '../../lib/email/resend';
 
 export const authOptions: NextAuthOptions = {
   // Don't use adapter due to version conflicts, handle user creation in callbacks instead
@@ -54,11 +55,13 @@ export const authOptions: NextAuthOptions = {
           // Check if user already exists
           let existingUser = await userRepository.findByEmail(user.email);
           let isFirstUser = false;
+          let isNewUser = false;
           
           if (!existingUser) {
             // Check if this is the first user in the database
             const userCount = await userRepository.count();
             isFirstUser = userCount === 0;
+            isNewUser = true;
             
             // Create new user
             existingUser = await userRepository.create({
@@ -83,6 +86,15 @@ export const authOptions: NextAuthOptions = {
               } else {
                 console.warn('⚠️ Admin role not found in database. Run seed to create roles.');
               }
+            }
+            
+            // Send welcome email to new users
+            try {
+              await sendWelcomeEmail(existingUser.email, existingUser.name || existingUser.email);
+              console.log('✅ Sent welcome email to:', existingUser.email);
+            } catch (emailError) {
+              console.error('⚠️ Failed to send welcome email:', emailError);
+              // Don't block sign-in if email fails
             }
           } else {
             // Update existing user with latest info from Google

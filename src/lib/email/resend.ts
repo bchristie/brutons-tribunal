@@ -1,8 +1,18 @@
 import { Resend } from 'resend';
 import { ReactElement } from 'react';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization of Resend client to avoid client-side instantiation
+let resendClient: Resend | null = null;
+
+function getResendClient() {
+  if (!resendClient) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY environment variable is not set');
+    }
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
 export interface SendEmailOptions {
   to: string | string[];
@@ -10,6 +20,7 @@ export interface SendEmailOptions {
   react: ReactElement;
   from?: string;
   replyTo?: string;
+  scheduledAt?: string;
 }
 
 /**
@@ -20,6 +31,7 @@ export interface SendEmailOptions {
 export async function sendEmail(options: SendEmailOptions) {
   try {
     const { to, subject, react, from, replyTo } = options;
+    const resend = getResendClient();
 
     const data = await resend.emails.send({
       from: from || 'Bruton\'s Tribunal <onboarding@resend.dev>', // Use resend.dev for testing
@@ -81,7 +93,9 @@ export async function sendWelcomeEmail(to: string, userName: string) {
     to,
     subject: 'Welcome to Bruton\'s Tribunal!',
     react: WelcomeEmail({ userName }),
+    scheduledAt: 'in 5 minutes',
   });
 }
 
-export { resend };
+// Export the getter function for direct access if needed
+export const getResend = getResendClient;

@@ -3,7 +3,7 @@ export {
   sendVerificationEmail,
   sendInvitationEmail,
   sendWelcomeEmail,
-  resend,
+  getResend,
 } from './resend';
 
 export type { SendEmailOptions } from './resend';

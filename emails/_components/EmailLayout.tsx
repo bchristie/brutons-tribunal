@@ -10,6 +10,7 @@ import {
   Link,
 } from '@react-email/components';
 import { ReactNode } from 'react';
+import { buildUrl } from '@/src/lib/utils/url';
 
 interface EmailLayoutProps {
   children: ReactNode;
@@ -44,11 +45,11 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
               © {new Date().getFullYear()} Bruton's Tribunal. All rights reserved.
             </Text>
             <Text style={styles.footerText}>
-              <Link href="https://yourwebsite.com/unsubscribe" style={styles.link}>
+              <Link href={buildUrl('/unsubscribe')} style={styles.link}>
                 Unsubscribe
               </Link>
               {' • '}
-              <Link href="https://yourwebsite.com/privacy" style={styles.link}>
+              <Link href={buildUrl('/privacy')} style={styles.link}>
                 Privacy Policy
               </Link>
             </Text>

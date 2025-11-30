@@ -1,5 +1,6 @@
 import { Text } from '@react-email/components';
-import { EmailLayout } from './_components';
+import { EmailLayout, Button } from './_components';
+import { buildUrl } from '@/src/lib/utils/url';
 
 interface WelcomeEmailProps {
   userName: string;
@@ -26,6 +27,10 @@ export default function WelcomeEmail({ userName }: WelcomeEmailProps) {
         <li style={styles.listItem}>Explore the latest updates</li>
         <li style={styles.listItem}>Connect with other members</li>
       </ul>
+
+      <div style={styles.buttonContainer}>
+        <Button href={buildUrl('/admin')}>Get Started</Button>
+      </div>
 
       <Text style={styles.paragraph}>
         If you have any questions, feel free to reach out to our support team.
@@ -65,6 +70,10 @@ const styles = {
   },
   listItem: {
     marginBottom: '8px',
+  },
+  buttonContainer: {
+    textAlign: 'center' as const,
+    margin: '24px 0',
   },
   signature: {
     fontSize: '16px',
