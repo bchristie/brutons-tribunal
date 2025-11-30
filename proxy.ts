@@ -15,6 +15,14 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next();
   }
   
+  // Special handling for /invite route - redirect mobile users to PWA version
+  if (pathname === '/invite' && isMobileDevice(userAgent) && !hasDesktopOverride) {
+    const mobileUrl = new URL('/pwa/invite', request.url);
+    // Preserve all query parameters (token, inviter, etc.)
+    mobileUrl.search = search;
+    return NextResponse.redirect(mobileUrl);
+  }
+  
   // Handle explicit override requests
   if (search.includes('force=desktop')) {
     const response = NextResponse.redirect(new URL('/', request.url));

@@ -13,7 +13,6 @@ function ActionButton({ action, isMobile }: { action: PageAction; isMobile: bool
   };
 
   const variant = action.variant || 'primary';
-  const label = isMobile && action.mobileLabel ? action.mobileLabel : action.label;
 
   return (
     <button
@@ -22,8 +21,15 @@ function ActionButton({ action, isMobile }: { action: PageAction; isMobile: bool
       className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variantClasses[variant]}`}
     >
       {action.icon}
-      <span className={isMobile && action.mobileLabel ? '' : 'hidden sm:inline'}>{label}</span>
-      {isMobile && action.mobileLabel && <span className="sm:hidden">{action.mobileLabel}</span>}
+      {/* Show mobileLabel on small screens if available, otherwise show full label */}
+      {action.mobileLabel ? (
+        <>
+          <span className="hidden sm:inline">{action.label}</span>
+          <span className="sm:hidden">{action.mobileLabel}</span>
+        </>
+      ) : (
+        <span>{action.label}</span>
+      )}
     </button>
   );
 }

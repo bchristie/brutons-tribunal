@@ -1,15 +1,16 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { UserList, PageHeaderContent } from '../../_components';
+import { UserList, PageHeaderContent, InviteUserModal } from '../../_components';
 import type { UserListFilters } from '../../_components/UserList/UserList.types';
 import type { PageHeaderConfig } from '../../_providers/PageHeaderProvider';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaEnvelope } from 'react-icons/fa';
 
 function UsersPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   
   const initialFilters = {
     search: searchParams.get('search') || '',
@@ -51,6 +52,13 @@ function UsersPageContent() {
     mobileTitle: 'Users',
     actions: [
       {
+        label: 'Invite User',
+        mobileLabel: 'Invite',
+        onClick: () => setIsInviteModalOpen(true),
+        icon: <FaEnvelope />,
+        variant: 'secondary',
+      },
+      {
         label: 'Create User',
         mobileLabel: 'New',
         onClick: handleCreateUser,
@@ -61,12 +69,19 @@ function UsersPageContent() {
   };
 
   return (
-    <PageHeaderContent config={pageHeaderConfig}>
-      <UserList 
-        initialFilters={initialFilters}
-        onFilterChange={handleFilterChange}
+    <>
+      <PageHeaderContent config={pageHeaderConfig}>
+        <UserList 
+          initialFilters={initialFilters}
+          onFilterChange={handleFilterChange}
+        />
+      </PageHeaderContent>
+      
+      <InviteUserModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
       />
-    </PageHeaderContent>
+    </>
   );
 }
 
