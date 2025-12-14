@@ -33,21 +33,37 @@ export function RecentActivity({ activities }: RecentActivityProps) {
           Recent Activity
         </h2>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm divide-y divide-gray-200 dark:divide-gray-700">
-          {activities.map((activity, index) => (
-            <div key={index} className="p-3">
-              <div className="flex items-start gap-3">
-                <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full mt-2`}></div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900 dark:text-white">
-                    {activity.event}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {activity.time}
-                  </p>
+          {activities.length === 0 ? (
+            <div className="p-8 text-center">
+              <div className="text-gray-400 dark:text-gray-500 mb-2">
+                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No recent activity
+              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                Activity will appear here as actions are performed
+              </p>
+            </div>
+          ) : (
+            activities.map((activity, index) => (
+              <div key={index} className="p-3">
+                <div className="flex items-start gap-3">
+                  <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full mt-2`}></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      {activity.event}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {activity.time}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     );
@@ -61,49 +77,65 @@ export function RecentActivity({ activities }: RecentActivityProps) {
         </h3>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 dark:bg-gray-900">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Event
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Time
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {activities.map((activity, index) => (
-              <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full`}></div>
-                    <span className="text-sm text-gray-900 dark:text-white">{activity.event}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                  {activity.user || '—'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                  {activity.time}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {activity.status && (
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusColorClasses[activity.statusColor || 'gray']}`}>
-                      {activity.status}
-                    </span>
-                  )}
-                </td>
+        {activities.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="text-gray-400 dark:text-gray-500 mb-3">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-base text-gray-500 dark:text-gray-400 font-medium">
+              No recent activity
+            </p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+              Activity will appear here as actions are performed
+            </p>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-900">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Event
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  User
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Status
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {activities.map((activity, index) => (
+                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full`}></div>
+                      <span className="text-sm text-gray-900 dark:text-white">{activity.event}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                    {activity.user || '—'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                    {activity.time}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {activity.status && (
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusColorClasses[activity.statusColor || 'gray']}`}>
+                        {activity.status}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

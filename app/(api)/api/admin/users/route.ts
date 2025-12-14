@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
 import { prisma, permissionRepository, userRepository } from '@/src/lib/prisma';
+import { AuditLogRepository } from '@/src/lib/prisma/AuditLogRepository';
 import { isValidUSPhoneNumber, normalizePhoneNumber } from '@/src/lib/utils/phone';
 
 export const dynamic = 'force-dynamic';
@@ -186,6 +187,22 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Create audit log entry
+    try {
+      const auditLogRepository = new AuditLogRepository(prisma);
+      await auditLogRepository.logUserCreated(
+        newUser.id,
+        user.id,
+        {
+          email: newUser.email,
+          name: newUser.name || undefined,
+        }
+      );
+    } catch (auditError) {
+      // Log but don't fail the user creation if audit fails
+      console.error('Failed to create audit log:', auditError);
+    }
 
     // Transform response
     const transformedUser = {

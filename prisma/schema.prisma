@@ -18,8 +18,10 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  updates   Update[]
-  userRoles UserRole[]
+  updates    Update[]
+  userRoles  UserRole[]
+  auditLogs  AuditLog[]
+  performedAudits AuditLog[] @relation("PerformedBy")
 
   @@map("users")
 }
@@ -125,4 +127,29 @@ enum Action {
   READ
   UPDATE
   DELETE
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String   // e.g., "USER_CREATED", "INVITATION_SENT", "ROLE_CHANGED"
+  entityType String   // e.g., "User", "Role", "Permission"
+  entityId   String?  // ID of the affected entity
+  metadata   Json?    // Additional context (email, role name, etc.)
+  ipAddress  String?  // IP address of the actor
+  createdAt  DateTime @default(now())
+  
+  // Relations
+  userId        String?  // User affected by the action
+  performedById String   // Admin who performed the action
+  
+  user        User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  performedBy User  @relation("PerformedBy", fields: [performedById], references: [id], onDelete: Cascade)
+  
+  // Indexes for performance
+  @@index([action])
+  @@index([entityType])
+  @@index([userId])
+  @@index([performedById])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

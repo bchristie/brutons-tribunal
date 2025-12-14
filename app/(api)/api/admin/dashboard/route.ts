@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
 import { prisma, permissionRepository } from '@/src/lib/prisma';
+import { AuditLogRepository } from '@/src/lib/prisma/AuditLogRepository';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,6 +47,7 @@ export async function GET(request: NextRequest) {
       totalRoles,
       totalPermissions,
       roles,
+      recentAuditLogs,
     ] = await Promise.all([
       // Total user count
       prisma.user.count(),
@@ -74,39 +76,56 @@ export async function GET(request: NextRequest) {
           name: 'asc',
         },
       }),
+
+      // Fetch recent audit logs
+      (async () => {
+        const auditLogRepository = new AuditLogRepository(prisma);
+        return auditLogRepository.findRecentWithUsers(10);
+      })(),
     ]);
 
-    // TODO: Replace with actual update data when updates system is implemented
-    const updateStats = {
-      total: 24,
-      publishedToday: 3,
-      recentUpdates: [
-        {
-          id: '1',
-          title: 'New Feature Announcement',
-          author: 'System',
-          publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-          status: 'published',
-          statusColor: 'green' as const,
-        },
-        {
-          id: '2',
-          title: 'Security Update',
-          author: 'Admin',
-          publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
-          status: 'published',
-          statusColor: 'blue' as const,
-        },
-        {
-          id: '3',
-          title: 'Maintenance Notice',
-          author: 'System',
-          publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-          status: 'published',
-          statusColor: 'purple' as const,
-        },
-      ],
+    // Map audit action to user-friendly description
+    const getActionDescription = (action: string, metadata: any, performedBy: any, targetUser: any): string => {
+      const actorName = performedBy.name || performedBy.email;
+      
+      // Helper to format user display name consistently
+      const formatUserName = (name: string | null | undefined, email: string | undefined): string => {
+        if (name && email) return `${name} (${email})`;
+        return email || name || 'user';
+      };
+      
+      switch (action) {
+        case 'USER_CREATED':
+          return `${actorName} created user ${formatUserName(metadata?.name, metadata?.email)}`;
+        case 'USER_UPDATED':
+          const targetName = formatUserName(targetUser?.name, targetUser?.email || metadata?.email);
+          const changeCount = Object.keys(metadata?.changes || {}).length;
+          return `${actorName} updated ${targetName}${changeCount > 0 ? ` (${changeCount} field${changeCount > 1 ? 's' : ''})` : ''}`;
+        case 'INVITATION_SENT':
+          return `${actorName} sent invitation to ${metadata?.email}`;
+        case 'ROLE_CHANGED':
+          const roleAction = metadata?.action === 'added' ? 'added' : 'removed';
+          const roleTargetName = formatUserName(targetUser?.name, targetUser?.email);
+          return `${actorName} ${roleAction} ${metadata?.roleName} role for ${roleTargetName}`;
+        case 'USER_DELETED':
+          return `${actorName} deleted user ${formatUserName(metadata?.name, metadata?.email)}`;
+        case 'PERMISSION_CHANGED':
+          const permAction = metadata?.action === 'granted' ? 'granted' : 'revoked';
+          return `${actorName} ${permAction} ${metadata?.resource}:${metadata?.permissionAction} permission`;
+        default:
+          return `${actorName} performed ${action.toLowerCase().replace('_', ' ')}`;
+      }
     };
+
+    // Transform audit logs for activity feed
+    const recentActivity = recentAuditLogs.map(log => ({
+      id: log.id,
+      title: getActionDescription(log.action, log.metadata, log.performedBy, log.user),
+      author: log.performedBy.name || log.performedBy.email,
+      publishedAt: log.createdAt.toISOString(),
+      status: 'audit',
+      statusColor: 'blue' as const,
+    }));
 
     // Build response
     const dashboardData = {
@@ -123,7 +142,9 @@ export async function GET(request: NextRequest) {
         total: totalPermissions,
         // Could add breakdown by resource if needed
       },
-      updates: updateStats,
+      activity: {
+        recent: recentActivity,
+      },
       timestamp: new Date().toISOString(),
     };
 

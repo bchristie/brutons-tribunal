@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
 import { prisma, permissionRepository } from '@/src/lib/prisma';
+import { AuditLogRepository } from '@/src/lib/prisma/AuditLogRepository';
 import { isValidUSPhoneNumber, normalizePhoneNumber } from '@/src/lib/utils/phone';
 
 export const dynamic = 'force-dynamic';
@@ -201,6 +202,30 @@ export async function PATCH(
       },
     });
 
+    // Create audit log entry (only if admin is updating another user)
+    if (isAdmin && !isSelf) {
+      try {
+        const auditLogRepository = new AuditLogRepository(prisma);
+        const changes: any = {};
+        if (name !== undefined && name !== existingUser.name) changes.name = { from: existingUser.name, to: name };
+        if (normalizedPhone !== undefined && normalizedPhone !== existingUser.phone) changes.phone = { from: existingUser.phone, to: normalizedPhone };
+        if (image !== undefined && image !== existingUser.image) changes.image = { from: existingUser.image ? 'set' : 'unset', to: image ? 'set' : 'unset' };
+        
+        if (Object.keys(changes).length > 0) {
+          await auditLogRepository.logUserUpdated(
+            userId,
+            currentUser.id,
+            {
+              email: updatedUser.email,
+              changes,
+            }
+          );
+        }
+      } catch (auditError) {
+        console.error('Failed to create audit log:', auditError);
+      }
+    }
+
     // Transform response
     const transformedUser = {
       id: updatedUser.id,
@@ -307,6 +332,21 @@ export async function DELETE(
         },
         { status: 409 }
       );
+    }
+
+    // Create audit log entry before deletion
+    try {
+      const auditLogRepository = new AuditLogRepository(prisma);
+      await auditLogRepository.logUserDeleted(
+        userId,
+        currentUser.id,
+        {
+          email: existingUser.email,
+          name: existingUser.name || undefined,
+        }
+      );
+    } catch (auditError) {
+      console.error('Failed to create audit log:', auditError);
     }
 
     // Delete user (cascade will remove related records)

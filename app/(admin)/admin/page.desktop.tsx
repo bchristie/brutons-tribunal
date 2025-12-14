@@ -29,19 +29,19 @@ export function DesktopAdminPage() {
     return <LoadingSpinner size="lg" message="Loading dashboard..." fullScreen />;
   }
 
-  // Map API updates to activity items with full desktop details
-  const activities = dashboardStats.updates.recentUpdates.map(update => ({
-    event: update.title,
-    user: update.author,
-    time: new Date(update.publishedAt).toLocaleString('en-US', {
+  // Map API audit logs to activity items with full desktop details
+  const activities = dashboardStats.activity.recent.map(activity => ({
+    event: activity.title,
+    user: activity.author,
+    time: new Date(activity.publishedAt).toLocaleString('en-US', {
       hour: 'numeric',
       minute: 'numeric',
       hour12: true,
       month: 'short',
       day: 'numeric',
     }),
-    status: update.status.charAt(0).toUpperCase() + update.status.slice(1),
-    statusColor: update.statusColor,
+    status: activity.status.charAt(0).toUpperCase() + activity.status.slice(1),
+    statusColor: activity.statusColor,
   }));
 
   return (
@@ -73,10 +73,10 @@ export function DesktopAdminPage() {
           color="gray"
         />
         <DashboardStat
-          label="Updates"
-          value={dashboardStats.updates.total}
+          label="Recent Actions"
+          value={dashboardStats.activity.recent.length}
           icon="📝"
-          subtext={`${dashboardStats.updates.publishedToday} published today`}
+          subtext="Admin activity logs"
           color="blue"
         />
       </DashboardGrid>

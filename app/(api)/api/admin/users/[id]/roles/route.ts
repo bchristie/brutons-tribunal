@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
 import { prisma, permissionRepository } from '@/src/lib/prisma';
+import { AuditLogRepository } from '@/src/lib/prisma/AuditLogRepository';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,6 +97,22 @@ export async function POST(
 
     // Assign role using permission repository (handles cache invalidation)
     await permissionRepository.assignRole(userId, role.id);
+
+    // Create audit log entry
+    try {
+      const auditLogRepository = new AuditLogRepository(prisma);
+      await auditLogRepository.logRoleChanged(
+        userId,
+        currentUser.id,
+        {
+          action: 'added',
+          roleId: role.id,
+          roleName: role.name,
+        }
+      );
+    } catch (auditError) {
+      console.error('Failed to create audit log:', auditError);
+    }
 
     // Fetch updated user with roles
     const updatedUser = await prisma.user.findUnique({
@@ -238,6 +255,22 @@ export async function DELETE(
 
     // Remove role using permission repository (handles cache invalidation)
     await permissionRepository.removeRole(userId, role.id);
+
+    // Create audit log entry
+    try {
+      const auditLogRepository = new AuditLogRepository(prisma);
+      await auditLogRepository.logRoleChanged(
+        userId,
+        currentUser.id,
+        {
+          action: 'removed',
+          roleId: role.id,
+          roleName: role.name,
+        }
+      );
+    } catch (auditError) {
+      console.error('Failed to create audit log:', auditError);
+    }
 
     // Fetch updated user with roles
     const updatedUser = await prisma.user.findUnique({

@@ -261,6 +261,92 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
       include: includeAuthor ? this.getAuthorInclude() : undefined,
     });
   }
+
+  /**
+   * Create a system announcement
+   */
+  async createAnnouncement(
+    title: string,
+    description: string,
+    authorId: string,
+    options?: {
+      content?: string;
+      linkHref?: string;
+      linkText?: string;
+    }
+  ): Promise<Update> {
+    return this.create({
+      title,
+      description,
+      content: options?.content,
+      type: UpdateType.ANNOUNCEMENT,
+      status: UpdateStatus.PUBLISHED,
+      linkHref: options?.linkHref,
+      linkText: options?.linkText,
+      authorId,
+      publishedAt: new Date(),
+    });
+  }
+
+  /**
+   * Create a news update
+   */
+  async createNews(
+    title: string,
+    description: string,
+    authorId: string,
+    options?: {
+      content?: string;
+      linkHref?: string;
+      linkText?: string;
+    }
+  ): Promise<Update> {
+    return this.create({
+      title,
+      description,
+      content: options?.content,
+      type: UpdateType.NEWS,
+      status: UpdateStatus.PUBLISHED,
+      linkHref: options?.linkHref,
+      linkText: options?.linkText,
+      authorId,
+      publishedAt: new Date(),
+    });
+  }
+
+  /**
+   * Count published updates today
+   */
+  async countPublishedToday(): Promise<number> {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    return this.getDelegate().count({
+      where: {
+        status: UpdateStatus.PUBLISHED,
+        publishedAt: {
+          gte: startOfDay,
+        },
+      },
+    });
+  }
+
+  /**
+   * Find recent published updates
+   */
+  async findRecentPublished(limit: number = 10): Promise<UpdateWithAuthor[]> {
+    return this.getDelegate().findMany({
+      where: {
+        status: UpdateStatus.PUBLISHED,
+      },
+      include: this.getAuthorInclude(),
+      orderBy: [
+        { publishedAt: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      take: limit,
+    }) as Promise<UpdateWithAuthor[]>;
+  }
 }
 
 // Export a singleton instance

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
 import { Roles } from '@/src/lib/permissions/permissions';
-import { permissionRepository } from '@/src/lib/prisma';
+import { prisma, permissionRepository } from '@/src/lib/prisma';
+import { AuditLogRepository } from '@/src/lib/prisma/AuditLogRepository';
 import { sendInvitationEmail } from '@/src/lib/email';
 import { buildUrlWithParams } from '@/src/lib/utils/url';
 
@@ -75,6 +76,18 @@ export async function POST(request: NextRequest) {
         { error: 'Failed to send invitation email' },
         { status: 500 }
       );
+    }
+
+    // Create audit log entry
+    try {
+      const auditLogRepository = new AuditLogRepository(prisma);
+      await auditLogRepository.logInvitationSent(
+        email,
+        user.id
+      );
+    } catch (auditError) {
+      // Log but don't fail the invitation if audit fails
+      console.error('Failed to create audit log:', auditError);
     }
 
     return NextResponse.json({
