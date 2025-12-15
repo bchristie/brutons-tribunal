@@ -95,6 +95,8 @@ export async function GET(request: NextRequest) {
       };
       
       switch (action) {
+        case 'USER_LOGIN':
+          return `${formatUserName(targetUser?.name, targetUser?.email || metadata?.email)} logged in${metadata?.provider ? ` via ${metadata.provider}` : ''}`;
         case 'USER_CREATED':
           return `${actorName} created user ${formatUserName(metadata?.name, metadata?.email)}`;
         case 'USER_UPDATED':

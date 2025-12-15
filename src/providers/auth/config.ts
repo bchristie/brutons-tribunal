@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma, userRepository, permissionRepository } from '../../lib/prisma';
+import { AuditLogRepository } from '../../lib/prisma/AuditLogRepository';
 import { Roles } from '../../lib/permissions/permissions';
 import { sendWelcomeEmail } from '../../lib/email/resend';
 
@@ -124,8 +125,26 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async signIn({ user, account, profile, isNewUser }) {
-      // Log successful sign-ins, send welcome emails, etc.
+      // Log successful sign-ins
       console.log(`User ${user.email} signed in`);
+      
+      // Create audit log entry for login
+      if (user.id && user.email) {
+        try {
+          const auditLogRepository = new AuditLogRepository(prisma);
+          await auditLogRepository.logUserLogin(
+            user.id,
+            {
+              email: user.email,
+              provider: account?.provider,
+              isNewUser,
+            }
+          );
+        } catch (auditError) {
+          console.error('Failed to create login audit log:', auditError);
+          // Don't block sign-in if audit fails
+        }
+      }
     },
   },
 };

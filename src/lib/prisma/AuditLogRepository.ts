@@ -21,6 +21,25 @@ export class AuditLogRepository extends BaseRepository<AuditLog, AuditLogCreate,
   }
 
   /**
+   * Log a user login event
+   */
+  async logUserLogin(
+    userId: string,
+    metadata?: { email: string; provider?: string; isNewUser?: boolean },
+    ipAddress?: string
+  ): Promise<AuditLog> {
+    return this.create({
+      action: 'USER_LOGIN',
+      entityType: 'User',
+      entityId: userId,
+      metadata: metadata as Prisma.InputJsonValue,
+      ipAddress,
+      user: { connect: { id: userId } },
+      performedBy: { connect: { id: userId } },
+    });
+  }
+
+  /**
    * Log a user creation event
    */
   async logUserCreated(
