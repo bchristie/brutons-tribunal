@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useApi } from '@/src/providers/GlobalProviders/GlobalProviders';
+import { useAuth } from '@/src/providers/AuthProvider';
 import { UserAvatar } from '@/src/components';
 import { UpdateType } from '@prisma/client';
 import type { PublicContentPreviewProps } from './PublicContentPreview.types';
@@ -21,6 +22,7 @@ function getUpdateTypeDisplay(type: UpdateType): string {
 
 export function PublicContentPreview({ className = '' }: PublicContentPreviewProps) {
   const { getUpdates } = useApi();
+  const { isAuthenticated } = useAuth();
   const [updates, setUpdates] = useState<UpdateWithAuthor[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,12 +97,14 @@ export function PublicContentPreview({ className = '' }: PublicContentPreviewPro
       {contentToShow.length === 0 && !isLoading && (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           <p>No updates available yet.</p>
-          <Link 
-            href="/pwa/join" 
-            className="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline"
-          >
-            Sign in to contribute content →
-          </Link>
+          {!isAuthenticated && (
+            <Link 
+              href="/pwa/join" 
+              className="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline"
+            >
+              Sign in to contribute content →
+            </Link>
+          )}
         </div>
       )}
       

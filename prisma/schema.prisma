@@ -83,13 +83,21 @@ model RolePermission {
 model Update {
   id          String      @id @default(cuid())
   title       String
-  description String
+  description String      // Short summary/preview text
   content     String?     // Full content/body (optional)
   type        UpdateType
-  status      UpdateStatus @default(PUBLISHED)
+  status      UpdateStatus @default(DRAFT)
   linkHref    String?     // Link destination (for CTAs)
   linkText    String?     // Link text (for CTAs)
   imageUrl    String?     // Optional featured image
+  
+  // Feature flags
+  featured    Boolean     @default(false) // Show on homepage/featured sections
+  
+  // Type-specific fields
+  eventDate   DateTime?   // For EVENT type: when the event occurs
+  expiresAt   DateTime?   // For ANNOUNCEMENT type: when to stop showing
+  tags        String[]    @default([]) // For categorization/filtering
   
   // Metadata
   createdAt   DateTime    @default(now())
@@ -105,6 +113,9 @@ model Update {
   @@index([status])
   @@index([publishedAt])
   @@index([createdAt])
+  @@index([featured])
+  @@index([eventDate])
+  @@index([expiresAt])
   @@map("updates")
 }
 

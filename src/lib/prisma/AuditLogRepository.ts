@@ -157,6 +157,82 @@ export class AuditLogRepository extends BaseRepository<AuditLog, AuditLogCreate,
   }
 
   /**
+   * Log an update creation event
+   */
+  async logUpdateCreated(
+    updateId: string,
+    performedById: string,
+    metadata: { title: string; type: string; status: string },
+    ipAddress?: string
+  ): Promise<AuditLog> {
+    return this.create({
+      action: 'UPDATE_CREATED',
+      entityType: 'Update',
+      entityId: updateId,
+      metadata: metadata as Prisma.InputJsonValue,
+      ipAddress,
+      performedBy: { connect: { id: performedById } },
+    });
+  }
+
+  /**
+   * Log an update modification event
+   */
+  async logUpdateUpdated(
+    updateId: string,
+    performedById: string,
+    metadata: { title: string; changes: Record<string, any> },
+    ipAddress?: string
+  ): Promise<AuditLog> {
+    return this.create({
+      action: 'UPDATE_UPDATED',
+      entityType: 'Update',
+      entityId: updateId,
+      metadata: metadata as Prisma.InputJsonValue,
+      ipAddress,
+      performedBy: { connect: { id: performedById } },
+    });
+  }
+
+  /**
+   * Log an update deletion event
+   */
+  async logUpdateDeleted(
+    updateId: string,
+    performedById: string,
+    metadata: { title: string; type: string },
+    ipAddress?: string
+  ): Promise<AuditLog> {
+    return this.create({
+      action: 'UPDATE_DELETED',
+      entityType: 'Update',
+      entityId: updateId,
+      metadata: metadata as Prisma.InputJsonValue,
+      ipAddress,
+      performedBy: { connect: { id: performedById } },
+    });
+  }
+
+  /**
+   * Log an update published event
+   */
+  async logUpdatePublished(
+    updateId: string,
+    performedById: string,
+    metadata: { title: string; type: string; publishedAt: string },
+    ipAddress?: string
+  ): Promise<AuditLog> {
+    return this.create({
+      action: 'UPDATE_PUBLISHED',
+      entityType: 'Update',
+      entityId: updateId,
+      metadata: metadata as Prisma.InputJsonValue,
+      ipAddress,
+      performedBy: { connect: { id: performedById } },
+    });
+  }
+
+  /**
    * Find recent audit logs with user details
    */
   async findRecentWithUsers(limit: number = 20): Promise<AuditLogWithUser[]> {

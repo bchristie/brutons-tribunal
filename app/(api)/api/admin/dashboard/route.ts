@@ -114,6 +114,15 @@ export async function GET(request: NextRequest) {
         case 'PERMISSION_CHANGED':
           const permAction = metadata?.action === 'granted' ? 'granted' : 'revoked';
           return `${actorName} ${permAction} ${metadata?.resource}:${metadata?.permissionAction} permission`;
+        case 'UPDATE_CREATED':
+          return `${actorName} created ${metadata?.type?.toLowerCase()} "${metadata?.title}"`;
+        case 'UPDATE_UPDATED':
+          const updateChangeCount = Object.keys(metadata?.changes || {}).length;
+          return `${actorName} updated "${metadata?.title}"${updateChangeCount > 0 ? ` (${updateChangeCount} field${updateChangeCount > 1 ? 's' : ''})` : ''}`;
+        case 'UPDATE_DELETED':
+          return `${actorName} deleted ${metadata?.type?.toLowerCase()} "${metadata?.title}"`;
+        case 'UPDATE_PUBLISHED':
+          return `${actorName} published ${metadata?.type?.toLowerCase()} "${metadata?.title}"`;
         default:
           return `${actorName} performed ${action.toLowerCase().replace('_', ' ')}`;
       }

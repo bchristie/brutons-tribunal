@@ -4,9 +4,14 @@ import type { UpdateType, UpdateStatus } from '@prisma/client';
 export interface UpdateCreateInput {
   title: string;
   description: string;
+  excerpt?: string;
   content?: string | null;
   type: UpdateType;
   status?: UpdateStatus;
+  featured?: boolean;
+  tags?: string[];
+  eventDate?: Date | null;
+  expiresAt?: Date | null;
   linkHref?: string | null;
   linkText?: string | null;
   imageUrl?: string | null;
@@ -17,9 +22,14 @@ export interface UpdateCreateInput {
 export interface UpdateUpdateInput {
   title?: string;
   description?: string;
+  excerpt?: string;
   content?: string | null;
   type?: UpdateType;
   status?: UpdateStatus;
+  featured?: boolean;
+  tags?: string[];
+  eventDate?: Date | null;
+  expiresAt?: Date | null;
   linkHref?: string | null;
   linkText?: string | null;
   imageUrl?: string | null;
@@ -64,9 +74,14 @@ export interface Update {
   id: string;
   title: string;
   description: string;
+  excerpt: string;
   content: string | null;
   type: UpdateType;
   status: UpdateStatus;
+  featured: boolean;
+  tags: string[];
+  eventDate: Date | null;
+  expiresAt: Date | null;
   linkHref: string | null;
   linkText: string | null;
   imageUrl: string | null;

@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import type { DashboardStats } from './api/dashboard';
 import type { User, UsersListResponse, FetchUsersParams, CreateUserParams, UpdateUserParams, AssignRoleParams, RemoveRoleParams } from './api/users';
 import type { Role } from './api/roles';
+import type { Update, UpdatesListResponse, FetchUpdatesParams, CreateUpdateParams, UpdateUpdateParams } from './api/updates';
 
 export interface CachedData<T> {
   data: T;
@@ -30,6 +31,15 @@ export interface AdminApiContextValue {
   fetchRoles: () => Promise<void>;
   isRolesStale: () => boolean;
 
+  // Updates
+  updates: UpdatesListResponse | null;
+  fetchUpdates: (params?: FetchUpdatesParams, force?: boolean) => Promise<void>;
+  fetchUpdate: (updateId: string) => Promise<Update>;
+  createUpdate: (params: CreateUpdateParams) => Promise<Update>;
+  updateUpdate: (updateId: string, params: UpdateUpdateParams) => Promise<Update>;
+  deleteUpdate: (updateId: string, updatedAt: string) => Promise<void>;
+  isUpdatesStale: () => boolean;
+
   // Generic loading and error state for any admin API operation
   isLoading: boolean;
   error: string | null;
@@ -46,3 +56,4 @@ export interface AdminApiProviderProps {
 export type { DashboardStats } from './api/dashboard';
 export type { User, UsersListResponse, FetchUsersParams, CreateUserParams, UpdateUserParams, AssignRoleParams, RemoveRoleParams } from './api/users';
 export type { Role } from './api/roles';
+export type { Update, UpdateAuthor, UpdatesListResponse, FetchUpdatesParams, CreateUpdateParams, UpdateUpdateParams } from './api/updates';

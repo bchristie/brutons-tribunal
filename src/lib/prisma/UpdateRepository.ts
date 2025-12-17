@@ -81,6 +81,16 @@ export class UpdateRepository extends BaseRepository<Update, UpdateCreateInput, 
   }
 
   /**
+   * Find update by ID with author
+   */
+  async findByIdWithAuthor(id: string): Promise<UpdateWithAuthor | null> {
+    return await this.getDelegate().findUnique({
+      where: { id },
+      include: this.getAuthorInclude(),
+    }) as UpdateWithAuthor | null;
+  }
+
+  /**
    * Find updates by author
    */
   async findByAuthor(authorId: string, includeAuthor: boolean = false): Promise<Update[] | UpdateWithAuthor[]> {

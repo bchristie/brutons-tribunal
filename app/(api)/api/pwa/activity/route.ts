@@ -58,7 +58,10 @@ export async function GET(request: NextRequest) {
       id: update.id,
       title: update.title,
       description: update.description,
+      content: update.content,
       type: update.type,
+      featured: update.featured,
+      tags: update.tags || [],
       publishedAt: update.publishedAt?.toISOString() || update.createdAt.toISOString(),
       author: {
         name: update.author.name || update.author.email,
