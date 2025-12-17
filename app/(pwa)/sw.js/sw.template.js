@@ -1,6 +1,6 @@
 // Service Worker for Brutons Tribunal PWA
-const CACHE_NAME = 'bt-pwa-v1';
-const DATA_CACHE_NAME = 'bt-pwa-data-v1';
+const CACHE_NAME = 'bt-pwa-v__VERSION__';
+const DATA_CACHE_NAME = 'bt-pwa-data-v__VERSION__';
 
 // Static resources to cache
 const urlsToCache = [
