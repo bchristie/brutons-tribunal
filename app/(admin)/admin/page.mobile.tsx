@@ -36,17 +36,17 @@ export function MobileAdminPage() {
     return <LoadingSpinner size="md" message="Loading dashboard..." fullScreen />;
   }
 
-  // Map API audit logs to activity items
-  const activities = dashboardStats.activity.recent.map(activity => ({
-    event: activity.title,
-    time: new Date(activity.publishedAt).toLocaleString('en-US', {
+  // Map API updates to activity items
+  const activities = dashboardStats.updates.recentUpdates.map(update => ({
+    event: update.title,
+    time: new Date(update.publishedAt).toLocaleString('en-US', {
       hour: 'numeric',
       minute: 'numeric',
       hour12: true,
       month: 'short',
       day: 'numeric',
     }),
-    statusColor: activity.statusColor,
+    statusColor: update.statusColor,
   }));
 
   return (
@@ -74,8 +74,8 @@ export function MobileAdminPage() {
           color="purple" 
         />
         <DashboardStat 
-          label="Actions" 
-          value={dashboardStats.activity.recent.length} 
+          label="Updates" 
+          value={dashboardStats.updates.recentUpdates.length} 
           color="green" 
         />
         <DashboardStat 

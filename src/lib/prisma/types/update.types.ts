@@ -74,7 +74,6 @@ export interface Update {
   id: string;
   title: string;
   description: string;
-  excerpt: string;
   content: string | null;
   type: UpdateType;
   status: UpdateStatus;
