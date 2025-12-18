@@ -25,12 +25,12 @@ export function DesktopAdminPage() {
   }, [refreshDashboard]);
 
   // Show loading state
-  if (isLoading || !dashboardStats) {
+  if (isLoading || !dashboardStats || !dashboardStats.updates) {
     return <LoadingSpinner size="lg" message="Loading dashboard..." fullScreen />;
   }
 
   // Map API updates to activity items with full desktop details
-  const activities = dashboardStats.updates.recentUpdates.map(update => ({
+  const activities = (dashboardStats.updates.recentUpdates || []).map(update => ({
     event: update.title,
     user: update.author,
     time: new Date(update.publishedAt).toLocaleString('en-US', {
@@ -74,9 +74,9 @@ export function DesktopAdminPage() {
         />
         <DashboardStat
           label="Recent Updates"
-          value={dashboardStats.updates.recentUpdates.length}
+          value={dashboardStats.updates?.total || 0}
           icon="📝"
-          subtext="Recent activity"
+          subtext={`${dashboardStats.updates?.publishedToday || 0} published today`}
           color="blue"
         />
       </DashboardGrid>

@@ -32,12 +32,12 @@ export function MobileAdminPage() {
   });
 
   // Show loading state
-  if (isLoading || !dashboardStats) {
+  if (isLoading || !dashboardStats || !dashboardStats.updates) {
     return <LoadingSpinner size="md" message="Loading dashboard..." fullScreen />;
   }
 
   // Map API updates to activity items
-  const activities = dashboardStats.updates.recentUpdates.map(update => ({
+  const activities = (dashboardStats.updates.recentUpdates || []).map(update => ({
     event: update.title,
     time: new Date(update.publishedAt).toLocaleString('en-US', {
       hour: 'numeric',
@@ -75,7 +75,7 @@ export function MobileAdminPage() {
         />
         <DashboardStat 
           label="Updates" 
-          value={dashboardStats.updates.recentUpdates.length} 
+          value={dashboardStats.updates?.total || 0} 
           color="green" 
         />
         <DashboardStat 

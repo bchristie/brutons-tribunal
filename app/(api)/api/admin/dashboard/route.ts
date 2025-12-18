@@ -40,6 +40,10 @@ export async function GET(request: NextRequest) {
     startOfWeek.setDate(now.getDate() - currentDayOfWeek);
     startOfWeek.setHours(0, 0, 0, 0);
 
+    // Calculate start of today for updates metrics
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
     // Fetch metrics in parallel
     const [
       totalUsers,
@@ -48,6 +52,9 @@ export async function GET(request: NextRequest) {
       totalPermissions,
       roles,
       recentAuditLogs,
+      totalUpdates,
+      updatesPublishedToday,
+      recentUpdates,
     ] = await Promise.all([
       // Total user count
       prisma.user.count(),
@@ -82,6 +89,36 @@ export async function GET(request: NextRequest) {
         const auditLogRepository = new AuditLogRepository(prisma);
         return auditLogRepository.findRecentWithUsers(10);
       })(),
+
+      // Total updates count
+      prisma.update.count(),
+
+      // Updates published today
+      prisma.update.count({
+        where: {
+          status: 'PUBLISHED',
+          publishedAt: {
+            gte: startOfToday,
+          },
+        },
+      }),
+
+      // Recent updates
+      prisma.update.findMany({
+        take: 5,
+        orderBy: [
+          { publishedAt: { sort: 'desc', nulls: 'first' } },
+          { createdAt: 'desc' },
+        ],
+        include: {
+          author: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
+      }),
     ]);
 
     // Map audit action to user-friendly description
@@ -138,6 +175,26 @@ export async function GET(request: NextRequest) {
       statusColor: 'blue' as const,
     }));
 
+    // Map update status to color
+    const getStatusColor = (status: string): 'green' | 'blue' | 'purple' | 'gray' => {
+      switch (status) {
+        case 'PUBLISHED': return 'green';
+        case 'DRAFT': return 'blue';
+        case 'ARCHIVED': return 'gray';
+        default: return 'purple';
+      }
+    };
+
+    // Transform updates for dashboard
+    const recentUpdatesFormatted = recentUpdates.map(update => ({
+      id: update.id,
+      title: update.title,
+      author: update.author.name || update.author.email,
+      publishedAt: (update.publishedAt || update.createdAt).toISOString(),
+      status: update.status,
+      statusColor: getStatusColor(update.status),
+    }));
+
     // Build response
     const dashboardData = {
       users: {
@@ -153,8 +210,10 @@ export async function GET(request: NextRequest) {
         total: totalPermissions,
         // Could add breakdown by resource if needed
       },
-      activity: {
-        recent: recentActivity,
+      updates: {
+        total: totalUpdates,
+        publishedToday: updatesPublishedToday,
+        recentUpdates: recentUpdatesFormatted,
       },
       timestamp: new Date().toISOString(),
     };
