@@ -25,23 +25,23 @@ export function DesktopAdminPage() {
   }, [refreshDashboard]);
 
   // Show loading state
-  if (isLoading || !dashboardStats || !dashboardStats.updates) {
+  if (isLoading || !dashboardStats) {
     return <LoadingSpinner size="lg" message="Loading dashboard..." fullScreen />;
   }
 
-  // Map API updates to activity items with full desktop details
-  const activities = (dashboardStats.updates.recentUpdates || []).map(update => ({
-    event: update.title,
-    user: update.author,
-    time: new Date(update.publishedAt).toLocaleString('en-US', {
+  // Map API audit logs to activity items with full desktop details
+  const activities = (dashboardStats.auditLogs || []).map(activity => ({
+    event: activity.title,
+    user: activity.author,
+    time: new Date(activity.publishedAt).toLocaleString('en-US', {
       hour: 'numeric',
       minute: 'numeric',
       hour12: true,
       month: 'short',
       day: 'numeric',
     }),
-    status: update.status.charAt(0).toUpperCase() + update.status.slice(1),
-    statusColor: update.statusColor,
+    status: activity.status.charAt(0).toUpperCase() + activity.status.slice(1),
+    statusColor: activity.statusColor,
   }));
 
   return (
@@ -72,12 +72,12 @@ export function DesktopAdminPage() {
           subtext={`${dashboardStats.roles.total} roles configured`}
           color="gray"
         />
-        <DashboardStat
-          label="Recent Updates"
-          value={dashboardStats.updates?.total || 0}
-          icon="📝"
-          subtext={`${dashboardStats.updates?.publishedToday || 0} published today`}
-          color="blue"
+        <DashboardStat 
+          label="Recent Actions" 
+          value={dashboardStats.auditLogs?.length || 0} 
+          icon="📝" 
+          subtext="Audit log activity" 
+          color="blue" 
         />
       </DashboardGrid>
 

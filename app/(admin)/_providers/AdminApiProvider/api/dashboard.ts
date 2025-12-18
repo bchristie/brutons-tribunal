@@ -15,6 +15,14 @@ export interface DashboardStats {
   permissions: {
     total: number;
   };
+  auditLogs: Array<{
+    id: string;
+    title: string;
+    author: string;
+    publishedAt: string;
+    status: string;
+    statusColor: 'green' | 'blue' | 'purple' | 'gray';
+  }>;
   updates: {
     total: number;
     publishedToday: number;

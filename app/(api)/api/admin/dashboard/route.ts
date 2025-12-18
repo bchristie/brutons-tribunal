@@ -210,6 +210,7 @@ export async function GET(request: NextRequest) {
         total: totalPermissions,
         // Could add breakdown by resource if needed
       },
+      auditLogs: recentActivity,
       updates: {
         total: totalUpdates,
         publishedToday: updatesPublishedToday,
