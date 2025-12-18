@@ -2,11 +2,10 @@
 const CACHE_NAME = 'bt-pwa-v__VERSION__';
 const DATA_CACHE_NAME = 'bt-pwa-data-v__VERSION__';
 
-// Static resources to cache
+// Static resources to cache (only those we know exist)
 const urlsToCache = [
   '/pwa',
   '/manifest.json',
-  '/_next/static/css/app/globals.css'
 ];
 
 // Critical data endpoints to cache
@@ -21,8 +20,14 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(urlsToCache);
+        // Add URLs individually and ignore failures
+        return Promise.allSettled(
+          urlsToCache.map(url => cache.add(url).catch(err => {
+            console.warn(`Failed to cache ${url}:`, err);
+          }))
+        );
       })
+      .then(() => self.skipWaiting()) // Activate immediately
   );
 });
 
@@ -126,14 +131,17 @@ self.addEventListener('activate', (event) => {
   const currentCaches = [CACHE_NAME, DATA_CACHE_NAME];
   
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!currentCaches.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (!currentCaches.includes(cacheName)) {
+              console.log('Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => self.clients.claim()) // Take control of all pages immediately
   );
 });
