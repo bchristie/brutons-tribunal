@@ -12,6 +12,7 @@ export function ResponsiveDialog({
   title,
   maxWidth = 'lg',
   drawerHeight = '75vh',
+  bottomOffset = 0,
   className = '',
 }: ResponsiveDialogProps) {
   const { isMobile } = useMobileDetection();
@@ -22,6 +23,7 @@ export function ResponsiveDialog({
         isOpen={isOpen}
         onClose={onClose}
         height={drawerHeight}
+        bottomOffset={bottomOffset}
         className={className}
       >
         {children}

@@ -134,6 +134,21 @@ export function RecentActivity({
             ))
           )}
         </div>
+
+        {/* Detail Dialog for Mobile */}
+        <ResponsiveDialog
+          isOpen={!!selectedAuditLog}
+          onClose={() => setSelectedAuditLog(null)}
+          title="Audit Log Details"
+          maxWidth="lg"
+        >
+          {selectedAuditLog && (
+            <AuditLogDetailView
+              auditLog={selectedAuditLog}
+              onClose={() => setSelectedAuditLog(null)}
+            />
+          )}
+        </ResponsiveDialog>
       </div>
     );
   }

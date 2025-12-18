@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/src/providers/auth/server';
-import { prisma } from '@/src/lib/prisma';
+import { prisma, permissionRepository } from '@/src/lib/prisma';
 import { AuditLogRepository } from '@/src/lib/prisma/AuditLogRepository';
+import { Roles } from '@/src/lib/permissions/permissions';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,8 +24,8 @@ export async function GET(
       );
     }
 
-    // Check if user has admin role
-    const isAdmin = currentUser.roles?.some((role: any) => role.name === 'Admin');
+    // Check if user has admin role using PermissionRepository
+    const isAdmin = await permissionRepository.hasRole(currentUser.id, Roles.ADMIN);
     if (!isAdmin) {
       return NextResponse.json(
         { error: 'Forbidden - Admin access required' },

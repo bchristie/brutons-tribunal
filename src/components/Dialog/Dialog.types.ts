@@ -12,6 +12,8 @@ export interface MobileDrawerProps extends BaseDialogProps {
   height?: string;
   /** Show handle bar at top of drawer */
   showHandle?: boolean;
+  /** Bottom offset in pixels to account for fixed navigation */
+  bottomOffset?: number;
 }
 
 export interface DesktopModalProps extends BaseDialogProps {
@@ -28,4 +30,6 @@ export interface ResponsiveDialogProps extends BaseDialogProps {
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   /** Height for mobile drawer */
   drawerHeight?: string;
+  /** Bottom offset in pixels for mobile drawer to account for fixed navigation */
+  bottomOffset?: number;
 }

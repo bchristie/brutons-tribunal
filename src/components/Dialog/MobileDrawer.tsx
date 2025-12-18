@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { MobileDrawerProps } from './Dialog.types';
 
 export function MobileDrawer({
@@ -9,6 +10,7 @@ export function MobileDrawer({
   children,
   height = '75vh',
   showHandle = true,
+  bottomOffset = 0,
   className = '',
 }: MobileDrawerProps) {
   // Close on escape key
@@ -38,7 +40,7 @@ export function MobileDrawer({
 
   if (!isOpen) return null;
 
-  return (
+  const drawerContent = (
     <>
       {/* Backdrop */}
       <div
@@ -49,13 +51,14 @@ export function MobileDrawer({
 
       {/* Sliding Drawer */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 animate-slide-up ${className}`}
+        className={`fixed inset-x-0 z-50 animate-slide-up ${className}`}
+        style={{ bottom: `${bottomOffset}px` }}
         role="dialog"
         aria-modal="true"
       >
         <div
           className="bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl flex flex-col"
-          style={{ height }}
+          style={{ height: bottomOffset > 0 ? `calc(${height} - ${bottomOffset}px)` : height }}
         >
           {/* Handle bar */}
           {showHandle && (
@@ -76,4 +79,7 @@ export function MobileDrawer({
       </div>
     </>
   );
+
+  // Render drawer at document body level using portal
+  return typeof document !== 'undefined' ? createPortal(drawerContent, document.body) : null;
 }
