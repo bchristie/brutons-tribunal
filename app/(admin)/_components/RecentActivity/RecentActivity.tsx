@@ -172,12 +172,6 @@ export function RecentActivity({
                   Event
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  User
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Time
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
               </tr>
@@ -185,17 +179,18 @@ export function RecentActivity({
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {activities.map((activity, index) => (
                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full`}></div>
-                      <span className="text-sm text-gray-900 dark:text-white">{activity.event}</span>
+                  <td className="px-6 py-4">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full mt-1.5`}></div>
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-900 dark:text-white">
+                          {activity.event}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          On {activity.time}{activity.user ? ` by ${activity.user}` : ''}
+                        </div>
+                      </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    {activity.user || '—'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    {activity.time}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {activity.status && (
