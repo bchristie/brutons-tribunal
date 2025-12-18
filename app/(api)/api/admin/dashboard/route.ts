@@ -167,6 +167,12 @@ export async function GET(request: NextRequest) {
           return `${actorName} deleted ${metadata?.type?.toLowerCase()} "${metadata?.title}"`;
         case 'UPDATE_PUBLISHED':
           return `${actorName} published ${metadata?.type?.toLowerCase()} "${metadata?.title}"`;
+        case 'DEPLOYMENT':
+          const env = metadata?.environment || 'unknown';
+          const commitSha = metadata?.gitCommitSha?.substring(0, 7) || 'unknown';
+          const branch = metadata?.gitBranch || 'unknown';
+          const commitMsg = metadata?.gitCommitMessage?.split('\n')[0] || ''; // First line only
+          return `Deployed to ${env} (${commitSha} on ${branch})${commitMsg ? `: ${commitMsg}` : ''}`;
         default:
           return `${actorName} performed ${action.toLowerCase().replace('_', ' ')}`;
       }

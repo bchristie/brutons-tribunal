@@ -173,17 +173,22 @@ If you have questions, please contact our support team.`,
   }
 
   console.log(`✅ Created/updated ${updates.length} updates\n`);
-
-  if (!prismaClient) {
-    await prisma.$disconnect();
-  }
 }
 
-// Allow running this script directly
+// Allow running this file directly
 if (require.main === module) {
-  seedUpdates()
-    .catch((e) => {
-      console.error(e);
+  const prisma = new PrismaClient();
+  
+  seedUpdates(prisma)
+    .then(() => {
+      console.log('✅ Update seeding complete!');
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('❌ Error seeding updates:', error);
       process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
     });
 }
