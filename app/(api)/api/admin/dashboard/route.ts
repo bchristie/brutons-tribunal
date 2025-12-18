@@ -6,13 +6,20 @@ import { AuditLogRepository } from '@/src/lib/prisma/AuditLogRepository';
 
 export const dynamic = 'force-dynamic';
 
+const LOGS_PER_PAGE = 10;
+
 /**
  * GET /api/admin/dashboard
  * Fetch dashboard statistics for admin panel
  * Requires: ADMIN role
+ * Query params: ?page=1 (for audit logs pagination)
  */
 export async function GET(request: NextRequest) {
   try {
+    // Get pagination parameter
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    
     // Check authentication and authorization
     const user = await getCurrentUser();
     
@@ -51,7 +58,7 @@ export async function GET(request: NextRequest) {
       totalRoles,
       totalPermissions,
       roles,
-      recentAuditLogs,
+      auditLogsPaginated,
       totalUpdates,
       updatesPublishedToday,
       recentUpdates,
@@ -84,10 +91,10 @@ export async function GET(request: NextRequest) {
         },
       }),
 
-      // Fetch recent audit logs
+      // Fetch paginated audit logs
       (async () => {
         const auditLogRepository = new AuditLogRepository(prisma);
-        return auditLogRepository.findRecentWithUsers(10);
+        return auditLogRepository.findPaginated(page, LOGS_PER_PAGE);
       })(),
 
       // Total updates count
@@ -166,7 +173,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Transform audit logs for activity feed
-    const recentActivity = recentAuditLogs.map(log => ({
+    const recentActivity = auditLogsPaginated.logs.map(log => ({
       id: log.id,
       title: getActionDescription(log.action, log.metadata, log.performedBy, log.user),
       author: log.performedBy.name || log.performedBy.email,
@@ -211,6 +218,12 @@ export async function GET(request: NextRequest) {
         // Could add breakdown by resource if needed
       },
       auditLogs: recentActivity,
+      auditLogsPagination: {
+        page,
+        perPage: LOGS_PER_PAGE,
+        total: auditLogsPaginated.total,
+        totalPages: auditLogsPaginated.totalPages,
+      },
       updates: {
         total: totalUpdates,
         publishedToday: updatesPublishedToday,

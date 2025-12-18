@@ -247,6 +247,32 @@ export class AuditLogRepository extends BaseRepository<AuditLog, AuditLogCreate,
   }
 
   /**
+   * Find paginated audit logs with user details
+   */
+  async findPaginated(page: number = 1, perPage: number = 10): Promise<{ logs: AuditLogWithUser[], total: number, totalPages: number }> {
+    const skip = (page - 1) * perPage;
+    
+    const [logs, total] = await Promise.all([
+      this.prisma.auditLog.findMany({
+        take: perPage,
+        skip,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: true,
+          performedBy: true,
+        },
+      }),
+      this.prisma.auditLog.count(),
+    ]);
+
+    return {
+      logs,
+      total,
+      totalPages: Math.ceil(total / perPage),
+    };
+  }
+
+  /**
    * Find audit logs by action type
    */
   async findByAction(action: string, limit: number = 50): Promise<AuditLogWithUser[]> {

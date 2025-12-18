@@ -9,7 +9,7 @@ import {
   RecentActivity,
   LoadingSpinner 
 } from '../_components';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * Desktop Admin Dashboard Page
@@ -18,11 +18,17 @@ import { useEffect } from 'react';
 export function DesktopAdminPage() {
   const { user } = useAuth();
   const { dashboardStats, isLoading, refreshDashboard } = useAdminApi();
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Load dashboard data on mount (provider checks staleness)
   useEffect(() => {
-    refreshDashboard();
-  }, [refreshDashboard]);
+    refreshDashboard(false, currentPage);
+  }, [refreshDashboard, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    refreshDashboard(true, page);
+  };
 
   // Show loading state
   if (isLoading || !dashboardStats) {
@@ -81,8 +87,13 @@ export function DesktopAdminPage() {
         />
       </DashboardGrid>
 
-      {/* Recent Activity Table */}
-      <RecentActivity activities={activities} />
+      {/* Recent Activity */}
+      <RecentActivity 
+        activities={activities}
+        page={dashboardStats.auditLogsPagination?.page || 1}
+        totalPages={dashboardStats.auditLogsPagination?.totalPages || 1}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }

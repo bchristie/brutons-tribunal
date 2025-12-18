@@ -11,7 +11,7 @@ import {
   RecentActivity,
   LoadingSpinner 
 } from '../_components';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * Mobile Admin Dashboard Page
@@ -20,16 +20,22 @@ import { useEffect } from 'react';
 export function MobileAdminPage() {
   const { user } = useAuth();
   const { dashboardStats, isLoading, refreshDashboard } = useAdminApi();
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Load dashboard data on mount (provider checks staleness)
   useEffect(() => {
-    refreshDashboard();
-  }, [refreshDashboard]);
+    refreshDashboard(false, currentPage);
+  }, [refreshDashboard, currentPage]);
   
   // Pull-to-refresh gesture (force refresh)
   const { isRefreshing, pullDistance, isThresholdReached } = usePullToRefresh({
-    onRefresh: () => refreshDashboard(true),
+    onRefresh: () => refreshDashboard(true, currentPage),
   });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    refreshDashboard(true, page);
+  };
 
   // Show loading state
   if (isLoading || !dashboardStats) {
@@ -86,7 +92,12 @@ export function MobileAdminPage() {
       </DashboardGrid>
 
       {/* Recent Activity */}
-      <RecentActivity activities={activities} />
+      <RecentActivity 
+        activities={activities}
+        page={dashboardStats.auditLogsPagination?.page || 1}
+        totalPages={dashboardStats.auditLogsPagination?.totalPages || 1}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }

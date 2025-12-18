@@ -9,4 +9,7 @@ export interface ActivityItem {
 
 export interface RecentActivityProps {
   activities: ActivityItem[];
+  page?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }

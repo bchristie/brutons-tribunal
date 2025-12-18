@@ -46,7 +46,7 @@ export function AdminApiProvider({ children }: AdminApiProviderProps) {
   // Dashboard methods
   const isDashboardStale = useCallback(() => isCacheStale(dashboardCache), [dashboardCache, isCacheStale]);
 
-  const refreshDashboard = useCallback(async (force = false) => {
+  const refreshDashboard = useCallback(async (force = false, page = 1) => {
     // Skip if cache is fresh and not forcing
     if (!force && !isDashboardStale()) {
       return;
@@ -56,7 +56,7 @@ export function AdminApiProvider({ children }: AdminApiProviderProps) {
     setError(null);
 
     try {
-      const data = await dashboardApi.fetchDashboard();
+      const data = await dashboardApi.fetchDashboard(page);
       setDashboardCache({
         data,
         timestamp: Date.now(),

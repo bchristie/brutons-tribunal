@@ -2,6 +2,7 @@
 
 import { useMobileDetection } from '@/src/hooks/useMobileDetection';
 import { RecentActivityProps } from './RecentActivity.types';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 
 /**
  * Recent Activity Component
@@ -9,8 +10,16 @@ import { RecentActivityProps } from './RecentActivity.types';
  * Mobile: Timeline view with dots and compact info
  * Desktop: Table view with full details and status badges
  */
-export function RecentActivity({ activities }: RecentActivityProps) {
+export function RecentActivity({ 
+  activities, 
+  page = 1, 
+  totalPages = 1,
+  onPageChange 
+}: RecentActivityProps) {
   const { isMobile } = useMobileDetection();
+  
+  const canGoPrev = page > 1;
+  const canGoNext = page < totalPages;
 
   const statusColorClasses = {
     green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
@@ -29,9 +38,42 @@ export function RecentActivity({ activities }: RecentActivityProps) {
   if (isMobile) {
     return (
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Recent Activity
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Recent Activity
+          </h2>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => canGoPrev && onPageChange?.(page - 1)}
+                disabled={!canGoPrev}
+                className={`p-1.5 rounded ${
+                  canGoPrev
+                    ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                }`}
+                aria-label="Previous page"
+              >
+                <FaChevronLeft className="w-3 h-3" />
+              </button>
+              <span className="text-xs text-gray-600 dark:text-gray-400 min-w-[3rem] text-center">
+                {page} / {totalPages}
+              </span>
+              <button
+                onClick={() => canGoNext && onPageChange?.(page + 1)}
+                disabled={!canGoNext}
+                className={`p-1.5 rounded ${
+                  canGoNext
+                    ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                }`}
+                aria-label="Next page"
+              >
+                <FaChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+        </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm divide-y divide-gray-200 dark:divide-gray-700">
           {activities.length === 0 ? (
             <div className="p-8 text-center">
@@ -71,10 +113,41 @@ export function RecentActivity({ activities }: RecentActivityProps) {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Recent Activity
         </h3>
+        {totalPages > 1 && (
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => canGoPrev && onPageChange?.(page - 1)}
+              disabled={!canGoPrev}
+              className={`p-2 rounded ${
+                canGoPrev
+                  ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              }`}
+              aria-label="Previous page"
+            >
+              <FaChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-sm text-gray-600 dark:text-gray-400 min-w-[4rem] text-center">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => canGoNext && onPageChange?.(page + 1)}
+              disabled={!canGoNext}
+              className={`p-2 rounded ${
+                canGoNext
+                  ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              }`}
+              aria-label="Next page"
+            >
+              <FaChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
       <div className="overflow-x-auto">
         {activities.length === 0 ? (

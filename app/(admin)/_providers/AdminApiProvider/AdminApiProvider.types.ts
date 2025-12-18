@@ -12,7 +12,7 @@ export interface CachedData<T> {
 export interface AdminApiContextValue {
   // Dashboard
   dashboardStats: DashboardStats | null;
-  refreshDashboard: (force?: boolean) => Promise<void>;
+  refreshDashboard: (force?: boolean, page?: number) => Promise<void>;
   isDashboardStale: () => boolean;
 
   // Users

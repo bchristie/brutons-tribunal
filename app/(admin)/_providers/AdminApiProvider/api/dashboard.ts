@@ -23,6 +23,12 @@ export interface DashboardStats {
     status: string;
     statusColor: 'green' | 'blue' | 'purple' | 'gray';
   }>;
+  auditLogsPagination: {
+    page: number;
+    perPage: number;
+    total: number;
+    totalPages: number;
+  };
   updates: {
     total: number;
     publishedToday: number;
@@ -38,8 +44,8 @@ export interface DashboardStats {
   timestamp: string;
 }
 
-export async function fetchDashboard(): Promise<DashboardStats> {
-  const response = await fetch('/api/admin/dashboard', {
+export async function fetchDashboard(page: number = 1): Promise<DashboardStats> {
+  const response = await fetch(`/api/admin/dashboard?page=${page}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
