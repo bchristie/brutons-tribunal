@@ -233,6 +233,19 @@ export class AuditLogRepository extends BaseRepository<AuditLog, AuditLogCreate,
   }
 
   /**
+   * Find a single audit log by ID with user details
+   */
+  async findByIdWithUsers(id: string): Promise<AuditLogWithUser | null> {
+    return this.prisma.auditLog.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        performedBy: true,
+      },
+    });
+  }
+
+  /**
    * Find recent audit logs with user details
    */
   async findRecentWithUsers(limit: number = 20): Promise<AuditLogWithUser[]> {

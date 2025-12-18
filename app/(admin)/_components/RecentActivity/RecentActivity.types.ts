@@ -1,4 +1,5 @@
 export interface ActivityItem {
+  id?: string;
   icon?: string;
   event: string;
   user?: string;

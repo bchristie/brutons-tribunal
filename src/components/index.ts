@@ -2,3 +2,4 @@
 export * from './UserAvatar';
 export * from './RefreshIndicator';
 export * from './Markdown';
+export * from './Dialog';

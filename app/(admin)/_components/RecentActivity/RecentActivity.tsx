@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { useMobileDetection } from '@/src/hooks/useMobileDetection';
+import { ResponsiveDialog } from '@/src/components';
+import { AuditLogDetailView, type AuditLog } from '../AuditLogDetailView';
 import { RecentActivityProps } from './RecentActivity.types';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 
@@ -17,6 +20,25 @@ export function RecentActivity({
   onPageChange 
 }: RecentActivityProps) {
   const { isMobile } = useMobileDetection();
+  const [selectedAuditLog, setSelectedAuditLog] = useState<AuditLog | null>(null);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+
+  const handleActivityClick = async (activityId: string) => {
+    setIsLoadingDetail(true);
+    try {
+      const response = await fetch(`/api/admin/audit-logs/${activityId}`);
+      if (response.ok) {
+        const auditLog = await response.json();
+        setSelectedAuditLog(auditLog);
+      } else {
+        console.error('Failed to fetch audit log details');
+      }
+    } catch (error) {
+      console.error('Error fetching audit log:', error);
+    } finally {
+      setIsLoadingDetail(false);
+    }
+  };
   
   const canGoPrev = page > 1;
   const canGoNext = page < totalPages;
@@ -91,7 +113,12 @@ export function RecentActivity({
             </div>
           ) : (
             activities.map((activity, index) => (
-              <div key={index} className="p-3">
+              <button
+                key={index}
+                onClick={() => activity.id && handleActivityClick(activity.id)}
+                className="w-full p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                disabled={isLoadingDetail}
+              >
                 <div className="flex items-start gap-3">
                   <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full mt-2`}></div>
                   <div className="flex-1 min-w-0">
@@ -103,7 +130,7 @@ export function RecentActivity({
                     </p>
                   </div>
                 </div>
-              </div>
+              </button>
             ))
           )}
         </div>
@@ -178,7 +205,11 @@ export function RecentActivity({
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {activities.map((activity, index) => (
-                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr
+                  key={index}
+                  onClick={() => activity.id && handleActivityClick(activity.id)}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                >
                   <td className="px-6 py-4">
                     <div className="flex items-start gap-3">
                       <div className={`w-2 h-2 ${dotColorClasses[activity.statusColor || 'gray']} rounded-full mt-1.5`}></div>
@@ -205,6 +236,21 @@ export function RecentActivity({
           </table>
         )}
       </div>
+
+      {/* Detail Dialog */}
+      <ResponsiveDialog
+        isOpen={!!selectedAuditLog}
+        onClose={() => setSelectedAuditLog(null)}
+        title="Audit Log Details"
+        maxWidth="lg"
+      >
+        {selectedAuditLog && (
+          <AuditLogDetailView
+            auditLog={selectedAuditLog}
+            onClose={() => setSelectedAuditLog(null)}
+          />
+        )}
+      </ResponsiveDialog>
     </div>
   );
 }

@@ -1,22 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Markdown } from '@/src/components';
-
-interface Activity {
-  id: string;
-  title: string;
-  description: string;
-  content?: string | null;
-  type: string;
-  time: string;
-  icon: React.ReactNode;
-  featured: boolean;
-  author: string;
-  tags: string[];
-  linkHref?: string | null;
-  linkText?: string | null;
-}
+import { MobileDrawer } from '@/src/components';
+import { UpdateDetailView, type Update } from '../UpdateDetailView';
 
 interface RecentActivityProps {
   limit?: number;
@@ -24,9 +10,9 @@ interface RecentActivityProps {
 }
 
 export function RecentActivity({ limit = 5, className = '' }: RecentActivityProps) {
-  const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
+  const [recentActivity, setRecentActivity] = useState<Update[]>([]);
   const [isLoadingActivity, setIsLoadingActivity] = useState(true);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<Update | null>(null);
 
   // Fetch recent activity from public updates API
   useEffect(() => {
@@ -35,7 +21,7 @@ export function RecentActivity({ limit = 5, className = '' }: RecentActivityProp
         const response = await fetch(`/api/pwa/activity?limit=${limit}`);
         if (response.ok) {
           const data = await response.json();
-          const activities: Activity[] = data.updates.map((update: any) => ({
+          const activities: Update[] = data.updates.map((update: any) => ({
             id: update.id,
             title: update.title,
             description: update.description,
@@ -156,102 +142,19 @@ export function RecentActivity({ limit = 5, className = '' }: RecentActivityProp
         )}
       </div>
 
-      {/* Detail Modal/Drawer */}
-      {selectedActivity && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
-            onClick={() => setSelectedActivity(null)}
+      {/* Detail Drawer */}
+      <MobileDrawer
+        isOpen={!!selectedActivity}
+        onClose={() => setSelectedActivity(null)}
+        height="75vh"
+      >
+        {selectedActivity && (
+          <UpdateDetailView
+            update={selectedActivity}
+            onClose={() => setSelectedActivity(null)}
           />
-          
-          {/* Sliding Card */}
-          <div className="fixed inset-x-0 bottom-0 z-50 animate-slide-up">
-            <div className="bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl h-[75vh] flex flex-col">
-              {/* Handle bar */}
-              <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
-                <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
-              </div>
-
-              {/* Content - Scrollable */}
-              <div className="flex-1 overflow-y-auto p-6 pb-20 space-y-4">
-                {/* Header */}
-                <div className="flex items-start gap-4">
-                  <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
-                    selectedActivity.featured
-                      ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
-                  }`}>
-                    {selectedActivity.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className={`text-xl text-gray-900 dark:text-white mb-1 ${
-                      selectedActivity.featured ? 'font-bold' : 'font-semibold'
-                    }`}>
-                      {selectedActivity.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                      <span>{selectedActivity.time}</span>
-                      <span>•</span>
-                      <span>{selectedActivity.author}</span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setSelectedActivity(null)}
-                    className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Description */}
-                {selectedActivity.description && (
-                  <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                      {selectedActivity.description}
-                    </p>
-                  </div>
-                )}
-
-                {/* Tags */}
-                {selectedActivity.tags && selectedActivity.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedActivity.tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Content - Scrollable */}
-                {selectedActivity.content && (
-                  <div className="flex-1 overflow-y-auto">
-                    <Markdown>{selectedActivity.content}</Markdown>
-                  </div>
-                )}
-
-                {/* Action Button */}
-                {selectedActivity.linkHref && (
-                  <div className="pt-4">
-                    <a
-                      href={selectedActivity.linkHref}
-                      className="block w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-center font-medium rounded-lg transition-colors"
-                    >
-                      {selectedActivity.linkText || 'Learn More'}
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+        )}
+      </MobileDrawer>
     </div>
   );
 }

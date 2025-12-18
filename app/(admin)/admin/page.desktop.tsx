@@ -37,6 +37,7 @@ export function DesktopAdminPage() {
 
   // Map API audit logs to activity items with full desktop details
   const activities = (dashboardStats.auditLogs || []).map(activity => ({
+    id: activity.id,
     event: activity.title,
     user: activity.author,
     time: new Date(activity.publishedAt).toLocaleString('en-US', {

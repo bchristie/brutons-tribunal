@@ -44,6 +44,7 @@ export function MobileAdminPage() {
 
   // Map API audit logs to activity items
   const activities = (dashboardStats.auditLogs || []).map(activity => ({
+    id: activity.id,
     event: activity.title,
     time: new Date(activity.publishedAt).toLocaleString('en-US', {
       hour: 'numeric',
