@@ -1,3 +1,4 @@
+import { Roles } from '@/src/lib/permissions/permissions';
 import { PrismaClient, UpdateType, UpdateStatus } from '@prisma/client';
 
 export async function seedUpdates(prismaClient?: PrismaClient) {
@@ -11,7 +12,7 @@ export async function seedUpdates(prismaClient?: PrismaClient) {
       userRoles: {
         some: {
           role: {
-            name: 'admin',
+            name: Roles.ADMIN,
           },
         },
       },
