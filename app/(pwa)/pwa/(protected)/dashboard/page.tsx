@@ -3,6 +3,7 @@
 import { useAuth } from '@/src/providers/AuthProvider';
 import { UserAvatar } from '@/src/components';
 import { RecentActivity } from '@/app/(pwa)/_components/RecentActivity';
+import { PWAInstallNudge } from '@/app/(pwa)/_components';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -81,6 +82,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* PWA Install Nudge */}
+      <PWAInstallNudge />
 
       {/* Quick Actions */}
       <div>

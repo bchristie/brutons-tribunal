@@ -6,7 +6,8 @@ import {
   PublicContentPreview, 
   AuthPromptNudge, 
   AuthenticatedWelcome, 
-  UnauthenticatedJoinPrompt 
+  UnauthenticatedJoinPrompt,
+  PWAInstallNudge
 } from '../_components';
 import heroImage from '@/public/img/bar-02.jpg';
 
@@ -96,6 +97,9 @@ export default function PWAHomePage() {
               />
             )}
           </div>
+
+          {/* PWA Install Nudge */}
+          <PWAInstallNudge className="mb-8" />
         </div>
 
         <PublicContentPreview />

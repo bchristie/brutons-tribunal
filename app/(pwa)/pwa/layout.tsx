@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GlobalProviders } from '@/src/providers/GlobalProviders';
 import { AuthProvider } from '@/src/providers/AuthProvider';
 import { getCurrentUser, getCurrentSession } from '@/src/providers/auth/server';
+import { ServiceWorkerRegistration } from '../_components';
 import "../../globals.css";
 
 // Force dynamic rendering since we have user-based layouts and widgets
@@ -58,6 +59,7 @@ export default async function PWALayout({
         <link rel="apple-touch-icon" href="/apple-icon" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-gray-50 dark:bg-gray-900`}>
+        <ServiceWorkerRegistration />
         <GlobalProviders>
           <AuthProvider initialUser={user} initialSession={session}>
             <main className="h-full">
