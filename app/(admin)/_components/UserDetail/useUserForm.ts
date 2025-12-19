@@ -195,12 +195,7 @@ export function useUserForm(userId?: string, returnUrl?: string) {
   };
 
   const handleCancel = () => {
-    if (isCreateMode) {
-      router.push(returnUrl || defaultReturnUrl);
-    } else {
-      setFormData(initialFormData);
-      setRoleChanges([]);
-    }
+    router.push(returnUrl || defaultReturnUrl);
   };
 
   // Check if user has a role (accounting for pending changes)
