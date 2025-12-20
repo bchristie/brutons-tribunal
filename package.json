@@ -17,6 +17,7 @@
     "@prisma/adapter-neon": "^6.19.0",
     "@prisma/client": "^6.19.0",
     "@react-email/components": "^1.0.1",
+    "@vercel/analytics": "^1.6.1",
     "next": "^16.0.10",
     "next-auth": "^4.24.7",
     "openai": "^6.8.1",

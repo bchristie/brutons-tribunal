@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { 
   isMobileDevice as checkIsMobileDevice, 
   supportsPWAInstallation as checkSupportsPWAInstallation,
@@ -140,6 +141,7 @@ export default function GlobalProviders({
 
   return (
     <GlobalContext.Provider value={contextValue}>
+      <Analytics />
       {children}
     </GlobalContext.Provider>
   );
